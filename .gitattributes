@@ -1,0 +1,5 @@
+*.vhd text eol=lf
+*.jou text eol=lf
+*.vdi text eol=lf
+*.rpt text eol=lf
+*.xdc text eol=lf

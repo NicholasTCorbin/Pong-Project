@@ -1,7 +1,7 @@
 # Pong-Project
 ECE 351 Group Final Project
 
-##Installation
+## Installation
 
 1. Make sure you have Git for Windows, I know :(
 2. Create a "351 Project" folder in your C: drive. So: C:\351 Project\

@@ -51,44 +51,59 @@ end gameController;
 architecture Behavioral of gameController is
     signal yl : integer range 0 to 480 := 3;
     signal yr : integer range 0 to 480 := 3;
+    
+    constant WIDTH : integer range 0 to 640 := 640;
+    constant HEIGHT : integer range 0 to 480 := 480;
+    
+    constant BALL_SIZE : integer range 0 to 32 := 16;
+    constant PADDLE_WIDTH : integer range 0 to 32 := 16;
+    constant PADDLE_HEIGHT : integer range 0 to 128 := 64;
+    constant PADDLE_OFFSET : integer range 0 to 64 := 32;
+    constant PADDLE_SPEED : integer range 0 to 15 := 12;
+    
+    constant xl : integer := PADDLE_OFFSET;
+    constant xr : integer := WIDTH - PADDLE_OFFSET - PADDLE_WIDTH;
 begin
-
+    --IMPORTANT: x,y is defined as 0,0 in the left corner
+    --X and Y increase as we move away from there.
+    --Everything is therefore defined by the upper left corner of the box
     leftScore <= 0;
     rightScore <= 0;
     playerScores <= '0';
     ballX <= 64;
     ballY <= 64;
     
+    --Updates paddle location depending on 
     process (clk60)   
         begin
         if rising_edge(clk60) then
             -- Only update if the signal is high and was not previously high
             if (lu = '1') then
-                if(yl > 11) then
-                    yl <= yl - 12;  
+                if(yl > (PADDLE_SPEED - 1)) then --11
+                    yl <= yl - PADDLE_SPEED;  
                 else
                     yl <= 0;
                 end if;     
             elsif (ld = '1') then
-                --640 - 64
-                if(yl < 404) then
-                    yl <= yl + 12;
+                --480 - 64 - 12 = 404
+                if(yl < (HEIGHT - PADDLE_HEIGHT - PADDLE_SPEED)) then
+                    yl <= yl + PADDLE_SPEED;
                 else
-                    yl <= 416;
+                    yl <= (HEIGHT - PADDLE_HEIGHT); --416
                 end if;
             end if;
             
             if (ru = '1') then
-                if(yr > 11) then
-                    yr <= yr - 12;     
+                if(yr > (PADDLE_SPEED - 1)) then
+                    yr <= yr - PADDLE_SPEED;     
                 else
                     yr <= 0;
                 end if; 
             elsif (rd = '1') then
-                if(yr < 404) then
-                    yr <= yr + 12;     
+                if(yr < (HEIGHT - PADDLE_HEIGHT - PADDLE_SPEED)) then
+                    yr <= yr + PADDLE_SPEED;     
                 else
-                    yr <= 416;
+                    yr <= (HEIGHT - PADDLE_HEIGHT);
                 end if; 
             end if;
         end if;

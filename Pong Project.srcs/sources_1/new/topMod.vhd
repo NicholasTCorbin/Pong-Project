@@ -81,9 +81,6 @@ architecture Behavioral of topMod is
     signal ld : std_logic;
     signal ru : std_logic;
     signal rd : std_logic;
-
-    signal yl : integer range 0 to 480 := 3;
-    signal yr : integer range 0 to 480 := 3;
     
     signal bx : integer range 0 to 640;
     signal by : integer range 0 to 480;
@@ -103,53 +100,14 @@ begin
         
     clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
     
-    git : gitTest port map(a => lu, b => sco);
-    /*
+    --git : gitTest port map(a => lu, b => sco);
+    
     control : gameController port map(reset => '0', init => '0', lu => lu, ld => ld, ru => ru, 
     rd => rd, clk60 => clk60, ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry, 
     leftScore => ls, rightScore => rs, playerScores => sco);
-    */
     
-    render : renderer port map(leftPaddleY => yl, rightPaddleY => yr, renderBall => '1', ballX => 64,
-    ballY => 64, leftScore => 0, rightScore => 0, smallClk => smallClk, sw => sw, hSync => hSync,
+    render : renderer port map(leftPaddleY => ly, rightPaddleY => ry, renderBall => '1', ballX => bx,
+    ballY => by, leftScore => ls, rightScore => rs, smallClk => smallClk, sw => sw, hSync => hSync,
     vSync => vSync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
-    
-
-    
-    
-    process (clk60)   
-    begin
-    if rising_edge(clk60) then
-        -- Only update if the signal is high and was not previously high
-        if (lu = '1') then
-            if(yl > 11) then
-                yl <= yl - 12;  
-            else
-                yl <= 0;
-            end if;     
-        elsif (ld = '1') then
-            --640 - 64
-            if(yl < 404) then
-                yl <= yl + 12;
-            else
-                yl <= 416;
-            end if;
-        end if;
-        
-        if (ru = '1') then
-            if(yr > 11) then
-                yr <= yr - 12;     
-            else
-                yr <= 0;
-            end if; 
-        elsif (rd = '1') then
-            if(yr < 404) then
-                yr <= yr + 12;     
-            else
-                yr <= 416;
-            end if; 
-        end if;
-    end if;
-    end process;
     
 end Behavioral;

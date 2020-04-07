@@ -66,9 +66,16 @@ architecture Behavioral of renderer is
     signal vcount :  std_logic_vector(10 downto 0);
     signal blank : std_logic;
     
-    signal xl : integer range 0 to 640 := 3;
+    constant WIDTH : integer range 0 to 640 := 640;
+    constant HEIGHT : integer range 0 to 480 := 480;
     
-    signal xr : integer range 0 to 640 := 596;
+    constant BALL_SIZE : integer range 0 to 32 := 16;
+    constant PADDLE_WIDTH : integer range 0 to 32 := 16;
+    constant PADDLE_HEIGHT : integer range 0 to 128 := 64;
+    constant PADDLE_OFFSET : integer range 0 to 64 := 32;
+    
+    signal xl : integer := PADDLE_OFFSET;
+    signal xr : integer := WIDTH - PADDLE_OFFSET - PADDLE_WIDTH;
 begin
 
     vga : vga_controller_640_60 port map(rst => sw, pixel_clk => smallClk, HS => hSync, VS => vSync,
@@ -97,12 +104,16 @@ begin
           rx := xr;
           ry := rightPaddleY;
           
-          --Render both boxes
-          if(ballX < hInt and hInt < (ballX + 16) and ballY < vInt and vInt < (ballY + 16)) then
+          --Renders the ball
+          if(ballX < hInt and hInt < (ballX + BALL_SIZE) and ballY < vInt and vInt < (ballY + BALL_SIZE)) then
             drawWhite := '1';
-          elsif(lx < hInt and hInt < (lx + 16) and ly < vInt and vInt < (ly + 64)) then
+          --Render both paddles
+          elsif(lx < hInt and hInt < (lx + PADDLE_WIDTH) and ly < vInt and vInt < (ly + PADDLE_HEIGHT)) then
             drawWhite := '1';
-          elsif(rx < hInt and hInt < (rx + 16) and ry < vInt and vInt < (ry + 64)) then
+          elsif(rx < hInt and hInt < (rx + PADDLE_WIDTH) and ry < vInt and vInt < (ry + PADDLE_HEIGHT)) then
+            drawWhite := '1';
+          --I'm just going to draw an ugly line in the center right now, we'll make it better later
+          elsif(hInt > 315 and hInt < 325) then
             drawWhite := '1';
           else
             drawWhite := '0';

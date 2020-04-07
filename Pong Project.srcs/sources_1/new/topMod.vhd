@@ -69,6 +69,11 @@ architecture Behavioral of topMod is
            playerScores : out STD_LOGIC);
     end component;
     
+    component gitTest is
+    Port ( a : in STD_LOGIC;
+           b : out STD_LOGIC);
+    end component;
+    
     signal smallClk : std_logic;
     signal clk60 : std_logic;
     
@@ -98,6 +103,7 @@ begin
         
     clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
     
+    git : gitTest port map(a => lu, b => sco);
     /*
     control : gameController port map(reset => '0', init => '0', lu => lu, ld => ld, ru => ru, 
     rd => rd, clk60 => clk60, ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry, 

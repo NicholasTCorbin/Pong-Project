@@ -49,9 +49,22 @@ entity gameController is
 end gameController;
 
 architecture Behavioral of gameController is
-    signal yl : integer range 0 to 480 := 3;
-    signal yr : integer range 0 to 480 := 3;
+
+    component paddleController is
+        Port ( reset : in STD_LOGIC;
+               lu : in STD_LOGIC;
+               ld : in STD_LOGIC;
+               ru : in STD_LOGIC;
+               rd : in STD_LOGIC;
+               clk60 : in STD_LOGIC;
+               leftPaddleY : out integer range 0 to 480;
+               rightPaddleY : out integer range 0 to 480);
+    end component;
     
+
+    signal bx : integer range 0 to 640 := 64;
+    signal by : integer range 0 to 480 := 64;
+
     constant WIDTH : integer range 0 to 640 := 640;
     constant HEIGHT : integer range 0 to 480 := 480;
     
@@ -70,46 +83,27 @@ begin
     leftScore <= 0;
     rightScore <= 0;
     playerScores <= '0';
-    ballX <= 64;
-    ballY <= 64;
+    --ballX <= 64;
+    --ballY <= 64;
+    
+    paddle : paddleController port map(reset => reset, lu => lu, ld => ld, ru => ru, rd => rd,
+    clk60 => clk60, leftPaddleY => leftPaddleY, rightPaddleY => rightPaddleY);
     
     --Updates paddle location depending on 
+    
     process (clk60)   
         begin
         if rising_edge(clk60) then
+            --bx <= bx + 4;
+            --by <= by + 6;
+            --ballX <= bx;
+            --ballY <= by;
+            ballX <= ballX + 4;
+            ballY <= ballY + 6;
             -- Only update if the signal is high and was not previously high
-            if (lu = '1') then
-                if(yl > (PADDLE_SPEED - 1)) then --11
-                    yl <= yl - PADDLE_SPEED;  
-                else
-                    yl <= 0;
-                end if;     
-            elsif (ld = '1') then
-                --480 - 64 - 12 = 404
-                if(yl < (HEIGHT - PADDLE_HEIGHT - PADDLE_SPEED)) then
-                    yl <= yl + PADDLE_SPEED;
-                else
-                    yl <= (HEIGHT - PADDLE_HEIGHT); --416
-                end if;
-            end if;
-            
-            if (ru = '1') then
-                if(yr > (PADDLE_SPEED - 1)) then
-                    yr <= yr - PADDLE_SPEED;     
-                else
-                    yr <= 0;
-                end if; 
-            elsif (rd = '1') then
-                if(yr < (HEIGHT - PADDLE_HEIGHT - PADDLE_SPEED)) then
-                    yr <= yr + PADDLE_SPEED;     
-                else
-                    yr <= (HEIGHT - PADDLE_HEIGHT);
-                end if; 
-            end if;
         end if;
     end process;
     
-    leftPaddleY <= yl;
-    rightPaddleY <= yr;
+
     
 end Behavioral;

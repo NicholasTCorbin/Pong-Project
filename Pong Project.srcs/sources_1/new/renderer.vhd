@@ -41,6 +41,7 @@ entity renderer is
        leftScore : in integer range 0 to 99;
        rightScore : in integer range 0 to 99;
        smallClk : in STD_LOGIC;
+       clk60 : in STD_LOGIC;
        sw : in STD_LOGIC;
        hSync : out STD_LOGIC;
        vSync : out STD_LOGIC;
@@ -62,6 +63,13 @@ architecture Behavioral of renderer is
     );
     end component;
     
+    component reg is
+    Port ( dataIn : in integer;
+           we : in STD_LOGIC;
+           clk : in STD_LOGIC;
+           dataOut : out integer);
+    end component;
+    
     signal hcount : std_logic_vector(10 downto 0);
     signal vcount :  std_logic_vector(10 downto 0);
     signal blank : std_logic;
@@ -76,17 +84,34 @@ architecture Behavioral of renderer is
     
     signal xl : integer := PADDLE_OFFSET;
     signal xr : integer := WIDTH - PADDLE_OFFSET - PADDLE_WIDTH;
+    
+    signal lx : integer;
+    signal ly : integer;
+    signal rx : integer;
+    signal ry : integer;
+    
+    signal inBallX : integer;
+    signal inBallY : integer;
 begin
-
+    lx <= xl;
+    rx <= xr;
+    
     vga : vga_controller_640_60 port map(rst => sw, pixel_clk => smallClk, HS => hSync, VS => vSync,
     hCount => hCount, vcount => vcount, blank => blank);
+   
+    --Putting this value into registers might make it bettter.
+    regL : reg port map(dataIn => leftPaddleY, we => '1', clk => clk60, dataOut => ly);
+    regR : reg port map(dataIn => rightPaddleY, we => '1', clk => clk60, dataOut => ry);
     
+    regX : reg port map(dataIn => ballX, we => '1', clk => clk60, dataOut => inBallX);
+    regY : reg port map(dataIn => ballY, we => '1', clk => clk60, dataOut => inBallY);
+
  process(smallClk)
     
-    variable lx : integer;
-    variable ly : integer;
-    variable rx : integer;
-    variable ry : integer;  
+    --variable lx : integer;
+    --variable ly : integer;
+    --variable rx : integer;
+    --variable ry : integer;  
      
     variable vInt : integer := to_integer(unsigned(vCount));
     variable hInt : integer := to_integer(unsigned(hCount));
@@ -99,13 +124,14 @@ begin
             vgaBlue <= "0000";
             drawWhite := '0';
         else
-          lx := xl;
-          ly := leftPaddleY;
-          rx := xr;
-          ry := rightPaddleY;
+          --lx := xl;
+          --ly := leftPaddleY;
+          --rx := xr;
+          --ry := rightPaddleY;
           
           --Renders the ball
-          if(ballX < hInt and hInt < (ballX + BALL_SIZE) and ballY < vInt and vInt < (ballY + BALL_SIZE)) then
+          --if(ballX < hInt and hInt < (ballX + BALL_SIZE) and ballY < vInt and vInt < (ballY + BALL_SIZE)) then
+          if(inBallX < hInt and hInt < (inBallX + BALL_SIZE) and inBallY < vInt and vInt < (inBallY + BALL_SIZE)) then
             drawWhite := '1';
           --Render both paddles
           elsif(lx < hInt and hInt < (lx + PADDLE_WIDTH) and ly < vInt and vInt < (ly + PADDLE_HEIGHT)) then

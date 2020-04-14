@@ -61,6 +61,14 @@ architecture Behavioral of gameController is
                rightPaddleY : out integer range 0 to 480);
     end component;
     
+    component ballController is
+    Port ( toggleLR : in STD_LOGIC;
+           toggleUD : in STD_LOGIC;
+           collision : in STD_LOGIC;
+           clk60 : in STD_LOGIC;
+           ballX : out integer range 0 to 640;
+           ballY : out integer range 0 to 480);
+    end component;
 
     signal bx : integer range 0 to 640 := 64;
     signal by : integer range 0 to 480 := 64;
@@ -89,8 +97,11 @@ begin
     paddle : paddleController port map(reset => reset, lu => lu, ld => ld, ru => ru, rd => rd,
     clk60 => clk60, leftPaddleY => leftPaddleY, rightPaddleY => rightPaddleY);
     
-    --Updates paddle location depending on 
+    ball : ballController port map(toggleLR => '0', toggleUD => '0', collision => '0', clk60 => clk60,
+    ballX => ballX, ballY => ballY); 
     
+    --Updates paddle location depending on 
+    /*
     process (clk60)   
         begin
         if rising_edge(clk60) then
@@ -103,7 +114,7 @@ begin
             -- Only update if the signal is high and was not previously high
         end if;
     end process;
-    
+    */
 
     
 end Behavioral;

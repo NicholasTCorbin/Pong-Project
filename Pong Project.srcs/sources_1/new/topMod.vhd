@@ -43,6 +43,7 @@ architecture Behavioral of topMod is
            leftScore : in integer range 0 to 99;
            rightScore : in integer range 0 to 99;
            smallClk : in STD_LOGIC;
+           clk60 : in STD_LOGIC;
            sw : in STD_LOGIC;
            hSync : out STD_LOGIC;
            vSync : out STD_LOGIC;
@@ -100,6 +101,9 @@ begin
         
     clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
     
+    --Useful for debugging
+    --clkDiv10 : clockdivider port map(clk_in => clk, count_val => 5000000, clk_out => clk60);
+    
     --git : gitTest port map(a => lu, b => sco);
     
     control : gameController port map(reset => '0', init => '0', lu => lu, ld => ld, ru => ru, 
@@ -107,7 +111,7 @@ begin
     leftScore => ls, rightScore => rs, playerScores => sco);
     
     render : renderer port map(leftPaddleY => ly, rightPaddleY => ry, renderBall => '1', ballX => bx,
-    ballY => by, leftScore => ls, rightScore => rs, smallClk => smallClk, sw => sw, hSync => hSync,
+    ballY => by, leftScore => ls, rightScore => rs, smallClk => smallClk, clk60 => clk60, sw => sw, hSync => hSync,
     vSync => vSync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
     
 end Behavioral;

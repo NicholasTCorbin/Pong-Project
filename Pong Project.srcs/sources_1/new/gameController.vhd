@@ -45,7 +45,8 @@ entity gameController is
            rightPaddleY : out integer range 0 to 480;
            leftScore : out integer range 0 to 99;
            rightScore : out integer range 0 to 99;
-           playerScores : out STD_LOGIC);
+           player1Scores : out STD_LOGIC;
+           player2Scores : out STD_LOGIC);
 end gameController;
 
 architecture Behavioral of gameController is
@@ -74,6 +75,11 @@ architecture Behavioral of gameController is
         Port ( clk60 : in STD_LOGIC;
                leftPaddleY : in integer;
                rightPaddleY : in integer;
+               --Used to predict where paddles are next frame
+               lu : in STD_LOGIC;
+               ld : in STD_LOGIC;
+               ru : in STD_LOGIC;
+               rd : in STD_LOGIC;
                ballX : out integer;
                ballY : out integer;
                player1Scores : out STD_LOGIC;
@@ -100,7 +106,7 @@ begin
     --Everything is therefore defined by the upper left corner of the box
     leftScore <= 0;
     rightScore <= 0;
-    playerScores <= '0';
+    --playerScores <= '0';
     --ballX <= 64;
     --ballY <= 64;
     
@@ -109,7 +115,7 @@ begin
 
     --Add player 1 and player 2 scoring out later.
     ballCollision : ballCollisionController port map(clk60 => clk60, leftPaddleY => leftPaddleY, rightPaddleY => rightPaddleY,
-    ballX => ballX, ballY => ballY); 
+    lu => lu, ld => ld, ru => ru, rd => rd, ballX => ballX, ballY => ballY, player1Scores => player1Scores, player2Scores => player2Scores); 
     
     --Updates paddle location depending on 
     /*

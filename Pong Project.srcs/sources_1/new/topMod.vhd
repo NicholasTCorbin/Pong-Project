@@ -69,6 +69,25 @@ architecture Behavioral of topMod is
            rightScore : out integer range 0 to 99;
            playerScores : out STD_LOGIC);
     end component;
+
+    component gameState is
+        port (
+            clk : in std_logic;
+    
+            p1goal_i : in std_logic;
+            p2goal_i : in std_logic;
+            p1goal_o : out std_logic;
+            p2goal_o : out std_logic;
+    
+            p1score_i : in integer range 0 to 99;
+            p2score_i : in integer range 0 to 99;
+            p1score_o : out integer range 0 to 99;
+            p2score_o : out integer range 0 to 99;
+    
+            ballX : out integer range 0 to 640;
+            ballY : out integer range 0 to 480
+        );
+    end component;
     
     component gitTest is
     Port ( a : in STD_LOGIC;
@@ -96,6 +115,10 @@ begin
     debouncerRightUp : debouncer port map(data => rightUp, clk => clk, op_data => ru);
     debouncerLeftUp : debouncer port map(data => leftUp, clk => clk, op_data => lu);
     debouncerRightDown : debouncer port map(data => rightDown, clk => clk, op_data => rd);
+
+    -- TODO: sco needs to be split into p1 and p2.
+    gameState_pm : gameState port map(clk => clk, p1goal_i => sco, p2goal_i => sco, p1goal_o => sco, p2goal_o => sco,
+                                   p1score_i => ls, p2score_i => rs, p1score_o => ls, p2score_o => rs, ballX => bx, ballY => by);
 
     clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);
         

@@ -38,8 +38,8 @@ entity renderer is
        renderBall : in STD_LOGIC;
        ballX : in integer range 0 to 640;
        ballY : in integer range 0 to 480;
-       leftScore : in integer range 0 to 99;
-       rightScore : in integer range 0 to 99;
+       leftScore : in integer range 0 to 9;
+       rightScore : in integer range 0 to 9;
        smallClk : in STD_LOGIC;
        clk60 : in STD_LOGIC;
        sw : in STD_LOGIC;
@@ -51,6 +51,123 @@ entity renderer is
 end renderer;
 
 architecture Behavioral of renderer is
+
+    type num_data is array (0 to 9, 0 to 9) of std_logic_vector(0 to 7);
+
+    constant num_rom : num_data := (
+    --   76543210
+        ( -- 0
+		"01111100", -- 0  *****
+		"11000110", -- 1 **   **
+		"11000110", -- 2 **   **
+		"11001110", -- 3 **  ***
+		"11011110", -- 4 ** ****
+		"11110110", -- 5 **** **
+		"11100110", -- 6 ***  **
+		"11000110", -- 7 **   **
+		"11000110", -- 8 **   **
+		"01111100"  -- 9  *****
+        ), ( -- 1
+		"00011000", -- 0    **
+		"00111000", -- 1   ***
+		"01111000", -- 2  ****
+		"00011000", -- 3    **
+		"00011000", -- 4    **
+		"00011000", -- 5    **
+		"00011000", -- 6    **
+		"00011000", -- 7    **
+		"00011000", -- 8    **
+		"01111110"  -- 9  ******
+        ),( -- 2
+		"01111100", -- 0  *****
+		"11000110", -- 1 **   **
+		"00000110", -- 2      **
+		"00001100", -- 3     **
+		"00011000", -- 4    **
+		"00110000", -- 5   **
+		"01100000", -- 6  **
+		"11000000", -- 7 **
+		"11000110", -- 8 **   **
+		"11111110"  -- 9 *******
+        ),( -- 3
+		"01111100", -- 0  *****
+		"11000110", -- 1 **   **
+		"00000110", -- 2      **
+		"00000110", -- 3      **
+		"00111100", -- 4   ****
+		"00000110", -- 5      **
+		"00000110", -- 6      **
+		"00000110", -- 7      **
+		"11000110", -- 8 **   **
+		"01111100"  -- 9  *****
+        ),( -- 4
+		"00001100", -- 0     **
+		"00011100", -- 1    ***
+		"00111100", -- 2   ****
+		"01101100", -- 3  ** **
+		"11001100", -- 4 **  **
+		"11111110", -- 5 *******
+		"00001100", -- 6     **
+		"00001100", -- 7     **
+		"00001100", -- 8     **
+		"00011110"  -- 9    ****
+        ),( -- 5
+		"11111110", -- 0 *******
+		"11000000", -- 1 **
+		"11000000", -- 2 **
+		"11000000", -- 3 **
+		"11111100", -- 4 ******
+		"00000110", -- 5      **
+		"00000110", -- 6      **
+		"00000110", -- 7      **
+		"11000110", -- 8 **   **
+		"01111100"  -- 9  *****
+        ),( -- 6
+		"00111000", -- 0   ***
+		"01100000", -- 1  **
+		"11000000", -- 2 **
+		"11000000", -- 3 **
+		"11111100", -- 4 ******
+		"11000110", -- 5 **   **
+		"11000110", -- 6 **   **
+		"11000110", -- 7 **   **
+		"11000110", -- 8 **   **
+		"01111100"  -- 9  *****
+        ),( -- 7
+		"11111110", -- 0 *******
+		"11000110", -- 1 **   **
+		"00000110", -- 2      **
+		"00000110", -- 3      **
+		"00001100", -- 4     **
+		"00011000", -- 5    **
+		"00110000", -- 6   **
+		"00110000", -- 7   **
+		"00110000", -- 8   **
+		"00110000"  -- 9   **
+        ),( -- 8
+		"01111100", -- 0  *****
+		"11000110", -- 1 **   **
+		"11000110", -- 2 **   **
+		"11000110", -- 3 **   **
+		"01111100", -- 4  *****
+		"11000110", -- 5 **   **
+		"11000110", -- 6 **   **
+		"11000110", -- 7 **   **
+		"11000110", -- 8 **   **
+		"01111100"  -- 9  *****
+        ),( -- 9
+		"01111100", -- 0  *****
+		"11000110", -- 1 **   **
+		"11000110", -- 2 **   **
+		"11000110", -- 3 **   **
+		"01111110", -- 4  ******
+		"00000110", -- 5      **
+		"00000110", -- 6      **
+		"00000110", -- 7      **
+		"00001100", -- 8     **
+		"01111000"  -- 9  ****
+    ));
+
     component vga_controller_640_60 is
     port(
        rst         : in std_logic;
@@ -131,15 +248,45 @@ begin
           
           --Renders the ball
           --if(ballX < hInt and hInt < (ballX + BALL_SIZE) and ballY < vInt and vInt < (ballY + BALL_SIZE)) then
-          if(inBallX < hInt and hInt < (inBallX + BALL_SIZE) and inBallY < vInt and vInt < (inBallY + BALL_SIZE)) then
+          if(inBallX < hInt
+              and hInt < (inBallX + BALL_SIZE)
+              and inBallY < vInt 
+              and vInt < (inBallY + BALL_SIZE)) then
             drawWhite := '1';
           --Render both paddles
-          elsif(lx < hInt and hInt < (lx + PADDLE_WIDTH) and ly < vInt and vInt < (ly + PADDLE_HEIGHT)) then
+          elsif(lx < hInt 
+              and hInt < (lx + PADDLE_WIDTH) 
+              and ly < vInt 
+              and vInt < (ly + PADDLE_HEIGHT)) then
             drawWhite := '1';
-          elsif(rx < hInt and hInt < (rx + PADDLE_WIDTH) and ry < vInt and vInt < (ry + PADDLE_HEIGHT)) then
+          elsif(rx < hInt 
+              and hInt < (rx + PADDLE_WIDTH) 
+              and ry < vInt 
+              and vInt < (ry + PADDLE_HEIGHT)) then
             drawWhite := '1';
+          -- p1 score :: leftScore : in integer range 0 to 9;
+          elsif(hInt >= 130 and hInt < 146
+              and vInt >= 5 and vInt < 25) then
+          -- index into the num data and draw it all acordingly
+          -- currently the bottom bit will be truncated such that
+          -- -- the result will be thicker than one pixel
+            if(num_rom(leftScore, (vInt - 5) / 2)((hint - 130) / 2) = '1') then
+                drawWhite := '1';
+            else
+                drawWhite := '0';
+            end if;
+          -- p2 score :: rightScore : in integer range 0 to 9;
+          elsif(hInt >= 450 and hInt < 466
+              and vInt >= 5 and vInt < 25) then
+            if(num_rom(rightScore, (vInt - 5) / 2)((hint - 450) / 2) = '1') then
+                drawWhite := '1';
+            else
+                drawWhite := '0';
+            end if;
           --I'm just going to draw an ugly line in the center right now, we'll make it better later
-          elsif(hInt > 315 and hInt < 325) then
+          elsif(hInt > 317
+              and hInt < 323
+              and ((vInt / 16) mod 2) = 1) then
             drawWhite := '1';
           else
             drawWhite := '0';

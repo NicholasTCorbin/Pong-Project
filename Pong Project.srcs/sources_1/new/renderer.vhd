@@ -286,7 +286,7 @@ begin
           --I'm just going to draw an ugly line in the center right now, we'll make it better later
           elsif(hInt > 317
               and hInt < 323
-              and ((vInt / 16) mod 2) = 1) then
+              and (((vInt + 8) / 16) mod 2) = 1) then
             drawWhite := '1';
           else
             drawWhite := '0';

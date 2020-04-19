@@ -69,7 +69,17 @@ architecture Behavioral of gameController is
            ballX : out integer range 0 to 640;
            ballY : out integer range 0 to 480);
     end component;
-
+    
+    component ballCollisionController is
+        Port ( clk60 : in STD_LOGIC;
+               leftPaddleY : in integer;
+               rightPaddleY : in integer;
+               ballX : out integer;
+               ballY : out integer;
+               player1Scores : out STD_LOGIC;
+               player2Scores : out STD_LOGIC);
+    end component;
+    
     signal bx : integer range 0 to 640 := 64;
     signal by : integer range 0 to 480 := 64;
 
@@ -96,8 +106,9 @@ begin
     
     paddle : paddleController port map(reset => reset, lu => lu, ld => ld, ru => ru, rd => rd,
     clk60 => clk60, leftPaddleY => leftPaddleY, rightPaddleY => rightPaddleY);
-    
-    ball : ballController port map(toggleLR => '0', toggleUD => '0', collision => '0', clk60 => clk60,
+
+    --Add player 1 and player 2 scoring out later.
+    ballCollision : ballCollisionController port map(clk60 => clk60, leftPaddleY => leftPaddleY, rightPaddleY => rightPaddleY,
     ballX => ballX, ballY => ballY); 
     
     --Updates paddle location depending on 

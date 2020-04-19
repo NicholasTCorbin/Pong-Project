@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date: 04/08/2020 09:11:15 PM
+-- Create Date: 04/18/2020 08:02:17 PM
 -- Design Name: 
--- Module Name: ballController - Behavioral
+-- Module Name: ballCollisionController - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -31,36 +31,24 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity ballController is
-    Port ( toggleLR : in STD_LOGIC;
-           toggleUD : in STD_LOGIC;
-           collision : in STD_LOGIC;
-           clk60 : in STD_LOGIC;
-           ballX : out integer range 0 to 640;
-           ballY : out integer range 0 to 480);
-end ballController;
+entity ballCollisionController is
+    Port ( clk60 : in STD_LOGIC;
+           leftPaddleY : in integer;
+           rightPaddleY : in integer;
+           ballX : out integer;
+           ballY : out integer;
+           player1Scores : out STD_LOGIC;
+           player2Scores : out STD_LOGIC);
+end ballCollisionController;
 
-architecture Behavioral of ballController is
+architecture Behavioral of ballCollisionController is
+
     signal upDown : STD_LOGIC;
     signal leftRight : STD_LOGIC;
-
-begin
-    --ballX <= 128;
-    --Eventually, we will send signals from the collision controller to prompt changes in ball direction
-    --Make speed a constant
     
-    --DON'T USE
-    --DON'T USE
-    --DON'T USE
-    --DON'T USE
-    --DON'T USE
-    --USE BALLCOLLISIONCONTROLLER
-    --USE BALLCOLLISIONCONTROLLER
-    --USE BALLCOLLISIONCONTROLLER
-    --USE BALLCOLLISIONCONTROLLER
-
-
-
+begin
+    
+    --USE ME
     process(clk60)   
         begin
         if rising_edge(clk60) then
@@ -102,4 +90,5 @@ begin
     end if;
         
     end process;
+
 end Behavioral;

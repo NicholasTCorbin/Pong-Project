@@ -1,9 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
+
 
 entity topMod is
     Port( clk : in std_logic;
@@ -19,6 +17,7 @@ entity topMod is
           hSync : out std_logic;
           vSync : out std_logic);
 end topMod;
+
 
 architecture Behavioral of topMod is   
 
@@ -106,7 +105,6 @@ architecture Behavioral of topMod is
     signal rd : std_logic;
     signal center : std_logic;
 
-    
     signal counter : integer := 0;
     signal bx : integer range 0 to 640;
     signal by : integer range 0 to 480;
@@ -116,12 +114,20 @@ architecture Behavioral of topMod is
     signal rs : integer;
     signal ls_s : integer;
     signal rs_s : integer;
-    signal sco : STD_LOGIC;
-    
-    signal player1Scores : std_logic;
-    signal player2Scores : std_logic;
+
+    signal sco : std_logic;
+    signal p1sco : std_logic;
+    signal p2sco : std_logic;
 
 begin
+    
+    --Useful for debugging
+    -- clkDiv10 : clockdivider port map(clk_in => clk, count_val => 5000000, clk_out => clk10);
+    
+    --git : gitTest port map(a => lu, b => sco);
+
+    clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);
+    clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
 
     debouncerLeftDown : debouncer port map(data => leftDown, clk => clk, op_data => ld);
     debouncerRightUp : debouncer port map(data => rightUp, clk => clk, op_data => ru);
@@ -129,26 +135,22 @@ begin
     debouncerRightDown : debouncer port map(data => rightDown, clk => clk, op_data => rd);
     debouncerCenter : debouncer port map(data => btnC, clk => clk, op_data => center);
 
-    -- TODO: sco needs to be split into p1 and p2.
-    gameState_pm : gameState port map(clk => clk, p1goal_i => player1Scores, p2goal_i => player2Scores, p1goal_o => player1Scores, p2goal_o => player2Scores,
-                                   p1score_i => ls, p2score_i => rs, p1score_o => ls, p2score_o => rs, ballX => bx, ballY => by);
-
-    clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);
-        
-    clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
-    
-    --Useful for debugging
-    -- clkDiv10 : clockdivider port map(clk_in => clk, count_val => 5000000, clk_out => clk10);
-    
-    --git : gitTest port map(a => lu, b => sco);
+    gameState_pm : gameState port map(clk => clk, p1goal_i => p1sco, p2goal_i => p2sco,
+                                      p1goal_o => p1sco, p2goal_o => p2sco,
+                                      p1score_i => ls, p2score_i => rs,
+                                      p1score_o => ls, p2score_o => rs,
+                                      ballX => bx, ballY => by);
     
     control : gameController port map(reset => '0', init => center, lu => lu, ld => ld, ru => ru, 
-    rd => rd, clk60 => clk60, ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry, 
-    leftScore => ls, rightScore => rs, player1Scores => player1Scores, player2Scores => player2Scores);
+                                      rd => rd, clk60 => clk60, ballX => bx, ballY => by,
+                                      leftPaddleY => ly, rightPaddleY => ry, 
+                                      leftScore => ls, rightScore => rs,
+                                      player1Scores => p1sco, player2Scores => p2sco);
     
-    render : renderer port map(leftPaddleY => ly, rightPaddleY => ry, renderBall => '1', ballX => bx,
-    ballY => by, leftScore => ls_s, rightScore => rs_s, smallClk => smallClk, clk60 => clk60, sw => sw, hSync => hSync,
-    vSync => vSync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
+    render : renderer port map(leftPaddleY => ly, rightPaddleY => ry, renderBall => '1',
+                               ballX => bx, ballY => by, leftScore => ls_s, rightScore => rs_s,
+                               smallClk => smallClk, clk60 => clk60, sw => sw, hSync => hSync,
+                               vSync => vSync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
 
    score_test : process (clk)
    begin

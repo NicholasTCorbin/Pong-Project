@@ -126,7 +126,7 @@ begin
     debouncerRightDown : debouncer port map(data => rightDown, clk => clk, op_data => rd);
 
     -- TODO: sco needs to be split into p1 and p2.
-    gameState_pm : gameState port map(clk => clk, p1goal_i => sco, p2goal_i => sco, p1goal_o => sco, p2goal_o => sco,
+    gameState_pm : gameState port map(clk => clk, p1goal_i => player1Scores, p2goal_i => player2Scores, p1goal_o => player1Scores, p2goal_o => player2Scores,
                                    p1score_i => ls, p2score_i => rs, p1score_o => ls, p2score_o => rs, ballX => bx, ballY => by);
 
     clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);

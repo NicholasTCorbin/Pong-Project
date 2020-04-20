@@ -11,6 +11,7 @@ entity topMod is
           rightUp : in std_logic;
           rightDown : in std_logic;
           btnC : in std_logic;
+          
           vgaRed : out std_logic_vector (3 downto 0);
           vgaBlue : out std_logic_vector (3 downto 0);
           vgaGreen : out std_logic_vector (3 downto 0);
@@ -21,12 +22,14 @@ end topMod;
 
 architecture Behavioral of topMod is   
 
+    -- Divides clock signal for use by renderer and game controller
     component clockdivider is
     port ( clk_in    : in  STD_LOGIC;
         count_val : in  integer range 0 to 1000000000;      
         clk_out   : out STD_LOGIC );
     end component;
     
+    -- Debounces button signals
     component debouncer is
     Port (
         DATA: in std_logic;
@@ -34,6 +37,7 @@ architecture Behavioral of topMod is
         OP_DATA : out std_logic);
     end component;
     
+    -- Renders game state to VGA output
     component renderer is
         Port ( 
            leftPaddleY : in integer range 0 to 480;
@@ -53,6 +57,7 @@ architecture Behavioral of topMod is
            vgaBlue : out STD_LOGIC_VECTOR (3 downto 0));
     end component;    
     
+    -- Manages game controls
     component gameController is
         Port ( 
            reset : in STD_LOGIC;
@@ -72,6 +77,7 @@ architecture Behavioral of topMod is
            player2Scores : out STD_LOGIC);
     end component;
 
+    -- Manages game state with finite state machine
     component gameState is
         port (
             clk : in std_logic;
@@ -91,11 +97,13 @@ architecture Behavioral of topMod is
         );
     end component;
     
+    -- Git debug test
     component gitTest is
     Port ( a : in STD_LOGIC;
            b : out STD_LOGIC);
     end component;
     
+    -- Clock signals
     signal smallClk : std_logic;
     signal clk60 : std_logic;
     
@@ -106,15 +114,19 @@ architecture Behavioral of topMod is
     signal center : std_logic;
 
     signal counter : integer := 0;
+    -- Ball coordinates
     signal bx : integer range 0 to 640;
     signal by : integer range 0 to 480;
+    -- Paddle vertical position
     signal ly : integer range 0 to 480;
     signal ry : integer range 0 to 480;
+    -- Player scores
     signal ls : integer;
     signal rs : integer;
     signal ls_s : integer;
     signal rs_s : integer;
 
+    -- Signals flagging goals
     signal sco : std_logic;
     signal p1sco : std_logic;
     signal p2sco : std_logic;
@@ -123,34 +135,37 @@ begin
     
     --Useful for debugging
     -- clkDiv10 : clockdivider port map(clk_in => clk, count_val => 5000000, clk_out => clk10);
-    
     --git : gitTest port map(a => lu, b => sco);
 
+    -- Clock divider port maps
     clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);
     clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
 
+    -- Debouncer port maps
     debouncerLeftDown : debouncer port map(data => leftDown, clk => clk, op_data => ld);
     debouncerRightUp : debouncer port map(data => rightUp, clk => clk, op_data => ru);
     debouncerLeftUp : debouncer port map(data => leftUp, clk => clk, op_data => lu);
     debouncerRightDown : debouncer port map(data => rightDown, clk => clk, op_data => rd);
     debouncerCenter : debouncer port map(data => btnC, clk => clk, op_data => center);
 
+    -- Game state port map
     gameState_pm : gameState port map(clk => clk, p1goal_i => p1sco, p2goal_i => p2sco,
                                       p1goal_o => p1sco, p2goal_o => p2sco,
                                       p1score_i => ls, p2score_i => rs,
                                       p1score_o => ls, p2score_o => rs,
                                       ballX => bx, ballY => by);
-    
+    -- Game controller port map
     control : gameController port map(reset => '0', init => center, lu => lu, ld => ld, ru => ru, 
                                       rd => rd, clk60 => clk60, ballX => bx, ballY => by,
                                       leftPaddleY => ly, rightPaddleY => ry, 
                                       leftScore => ls, rightScore => rs,
                                       player1Scores => p1sco, player2Scores => p2sco);
-    
+    -- Renderer port map
     render : renderer port map(leftPaddleY => ly, rightPaddleY => ry, renderBall => '1',
                                ballX => bx, ballY => by, leftScore => ls_s, rightScore => rs_s,
-                               smallClk => smallClk, clk60 => clk60, sw => sw, hSync => hSync,
-                               vSync => vSync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
+                               smallClk => smallClk, clk60 => clk60, sw => sw,
+                               hSync => hSync, vSync => vSync,
+                               vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
 
    score_test : process (clk)
    begin

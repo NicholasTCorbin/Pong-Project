@@ -10,14 +10,14 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity gen_counter is
-    generic (WIDTH : interger := 8);
-    Port ( clk, rst : in STD_LOGIC;
-           dout : out STD_LOGIC_VECTOR (WIDTH - 1 downto 0));
+    generic (bit_WIDTH : integer := 8);
+    Port ( clk, rst, ena : in STD_LOGIC;
+           dout : out STD_LOGIC_VECTOR (bit_WIDTH - 1 downto 0));
 end gen_counter;
 
 architecture Behavioral of gen_counter is
 
-signal data : unsigned(WIDTH - 1 downto 0);
+signal data : unsigned(bit_WIDTH - 1 downto 0);
 
 begin
 
@@ -28,7 +28,7 @@ begin
    if(rising_edge(clk)) then
       if(rst = '1') then
          data <= (others => '0');
-      else
+      elsif(ena = '1') then
          data <= data + 1;
       end if;
    end if;

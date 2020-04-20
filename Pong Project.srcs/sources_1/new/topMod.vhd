@@ -134,7 +134,7 @@ architecture Behavioral of topMod is
 	signal p1sco : std_logic;
 	signal p2sco : std_logic;
 
-    
+
 begin
 	--Useful for debugging
 	-- clkDiv10 : clockdivider port map(clk_in => clk, count_val => 5000000, clk_out => clk10);

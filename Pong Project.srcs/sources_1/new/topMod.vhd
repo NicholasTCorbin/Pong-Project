@@ -12,6 +12,7 @@ entity topMod is
           leftDown : in std_logic;
           rightUp : in std_logic;
           rightDown : in std_logic;
+          btnC : in std_logic;
           vgaRed : out std_logic_vector (3 downto 0);
           vgaBlue : out std_logic_vector (3 downto 0);
           vgaGreen : out std_logic_vector (3 downto 0);
@@ -83,7 +84,8 @@ architecture Behavioral of topMod is
     signal ld : std_logic;
     signal ru : std_logic;
     signal rd : std_logic;
-    
+    signal center : std_logic;
+
     signal bx : integer range 0 to 640;
     signal by : integer range 0 to 480;
     signal ly : integer range 0 to 480;
@@ -100,6 +102,7 @@ begin
     debouncerRightUp : debouncer port map(data => rightUp, clk => clk, op_data => ru);
     debouncerLeftUp : debouncer port map(data => leftUp, clk => clk, op_data => lu);
     debouncerRightDown : debouncer port map(data => rightDown, clk => clk, op_data => rd);
+    debouncerCenter : debouncer port map(data => btnC, clk => clk, op_data => center);
 
     clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);
         
@@ -110,7 +113,7 @@ begin
     
     --git : gitTest port map(a => lu, b => sco);
     
-    control : gameController port map(reset => '0', init => '0', lu => lu, ld => ld, ru => ru, 
+    control : gameController port map(reset => '0', init => center, lu => lu, ld => ld, ru => ru, 
     rd => rd, clk60 => clk60, ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry, 
     leftScore => ls, rightScore => rs, player1Scores => player1Scores, player2Scores => player2Scores);
     

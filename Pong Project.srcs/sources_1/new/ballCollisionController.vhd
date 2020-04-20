@@ -40,8 +40,9 @@ entity ballCollisionController is
            ld : in STD_LOGIC;
            ru : in STD_LOGIC;
            rd : in STD_LOGIC;
-           ballX : out integer;
-           ballY : out integer;
+           resetInit : in STD_LOGIC;
+           ballX : out integer := 320;
+           ballY : out integer := 240;
            player1Scores : out STD_LOGIC;
            player2Scores : out STD_LOGIC);
 end ballCollisionController;
@@ -49,10 +50,17 @@ end ballCollisionController;
 architecture Behavioral of ballCollisionController is
     constant PADDLE_OFFSET : integer range 0 to 64 := 32;
     constant PADDLE_WIDTH : integer range 0 to 32 := 16;
+    constant PADDLE_HEIGHT : integer range 0 to 128 := 64;
     constant PADDLE_SPEED : integer range 0 to 15 := 12;
-
-    constant WIDTH : integer range 0 to 640 := 640;
+    constant BALL_SIZE : integer range 0 to 32 := 16;
     
+    
+    constant WIDTH : integer range 0 to 640 := 640;
+    constant HEIGHT : integer range 0 to 480 := 480;
+    
+    constant RIGHT_PADDLE_X : integer := WIDTH - PADDLE_OFFSET - PADDLE_WIDTH;
+    constant LEFT_PADDLE_X : integer := PADDLE_OFFSET + PADDLE_WIDTH;
+
     -- -> leftRight = '0'
     --Going down the screen = '0'
     signal upDown : STD_LOGIC;
@@ -64,8 +72,23 @@ architecture Behavioral of ballCollisionController is
     signal ballSpeedX : integer := 5;
     signal ballSpeedY : integer := 5;
     
+    --signal inBallX : integer := 320;
+    --signal inBallY : integer := 320;
+    
 begin
-
+    
+    --ballX <= 320;
+    --ballY <= 240;
+    /*
+    process(resetInit)
+    begin
+        if(rising_edge(resetInit)) then
+            ballX <= 320;
+            ballY <= 240;
+        end if;
+    end process;
+    */
+    
     process(clk60) 
         variable nextBallX : integer;
         variable nextBallY : integer;
@@ -120,47 +143,64 @@ begin
         end if;
     end process;
     
-    --USE ME
-    process(clk60)   
+    
+    
+    process(clk60, resetInit)   
         begin
         if rising_edge(clk60) then
+            if(resetInit = '0') then
+            --Controls code that bounces ball off of top and bottom screen
             if(upDown = '1') then
-                if(ballY < 5) then
+                if(ballY < ballSpeedY) then
                     --Bounces off the wall
-                    ballY <= 5 - ballY;
+                    ballY <= ballSpeedY - ballY;
                     upDown <= '0';
                 else
-                    ballY <= ballY - 5;
+                    ballY <= ballY - ballSpeedY;
                 end if;
             elsif (upDown = '0') then
-                if(ballY > 475) then
+                if(ballY > (HEIGHT - ballSpeedY)) then
                     --Bounces off the wall
-                    ballY <= 960 - 5 - ballY;
+                    ballY <= 960 - ballSpeedY - ballY;
                     upDown <= '1';
                 else
-                    ballY <= ballY + 5;
+                    ballY <= ballY + ballSpeedY;
                 end if;
+            end if;
+            else
+                ballY <= 240;
             end if;
 -------------------------
         if(leftRight = '1') then
-            if(ballX < 5) then
+            if(ballX < ballSpeedX) then
                 --Bounces off the wall
-                ballX <= 5 - ballX;
+                ballX <= ballSpeedX - ballX;
+                leftRight <= '0';
+            --Paddle Collision Detection. The worst if statement of all time
+            --If we are close on the x axis to the paddle
+            elsif(((ballX - LEFT_PADDLE_X) < ballSpeedX) and (ballY > (leftPaddleY - BALL_SIZE)) and (ballY < (leftPaddleY + PADDLE_HEIGHT))) then
+                ballX <= ballX - ballSpeedX;
                 leftRight <= '0';
             else
-                ballX <= ballX - 5;
+                ballX <= ballX - ballSpeedX;
             end if;
         elsif (leftRight = '0') then
-            if(ballX > 635) then
+            if(ballX > (WIDTH - ballSpeedX)) then
                 --Bounces off the wall
-                ballX <= 1280 - 5 - ballX;
+                ballX <= 1280 - ballSpeedX - ballX;
+                leftRight <= '1';
+            elsif(((RIGHT_PADDLE_X - BALL_SIZE - ballX) < ballSpeedX) and (ballY > (rightPaddleY - BALL_SIZE)) and (ballY < (rightPaddleY + PADDLE_HEIGHT))) then
+                ballX <= ballX + ballSpeedX;
                 leftRight <= '1';
             else
-                ballX <= ballX + 5;
+                ballX <= ballX + ballSpeedX;
             end if;
         end if;            
     end if;
-        
+    
+    --ballX <= inBallX;
+    --ballY <= inBallY;
+    
     end process;
-
+    
 end Behavioral;

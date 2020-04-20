@@ -152,8 +152,8 @@ begin
     gameState_pm : gameState port map(clk => clk, p1goal_i => p1sco, p2goal_i => p2sco,
                                       p1goal_o => p1sco, p2goal_o => p2sco,
                                       p1score_i => ls, p2score_i => rs,
-                                      p1score_o => ls, p2score_o => rs,
-                                      ballX => bx, ballY => by);
+                                      p1score_o => ls, p2score_o => rs);
+                                      --ballX => bx, ballY => by);
     -- Game controller port map
     control : gameController port map(reset => '0', init => center, lu => lu, ld => ld, ru => ru, 
                                       rd => rd, clk60 => clk60, ballX => bx, ballY => by,
@@ -166,7 +166,7 @@ begin
                                smallClk => smallClk, clk60 => clk60, sw => sw,
                                hSync => hSync, vSync => vSync,
                                vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
-
+   
    score_test : process (clk)
    begin
       if rising_edge(clk) then

@@ -54,7 +54,6 @@ architecture Behavioral of ballCollisionController is
     constant PADDLE_SPEED : integer range 0 to 15 := 12;
     constant BALL_SIZE : integer range 0 to 32 := 16;
     
-    
     constant WIDTH : integer range 0 to 640 := 640;
     constant HEIGHT : integer range 0 to 480 := 480;
     
@@ -72,8 +71,6 @@ architecture Behavioral of ballCollisionController is
     signal ballSpeedX : integer := 5;
     signal ballSpeedY : integer := 5;
     
-    --signal inBallX : integer := 320;
-    --signal inBallY : integer := 320;
     
 begin
     
@@ -89,56 +86,18 @@ begin
     end process;
     */
     
-    process(clk60) 
-        variable nextBallX : integer;
-        variable nextBallY : integer;
-        variable nextLeftPaddleY : integer;
-        variable nextRightPaddleY : integer;
-          
+    process(clk60)        
         begin
-        
         if rising_edge(clk60) then
             
-            --Use these and next ball to predict next frame collision
-            if(lu = '1') then
-                nextLeftPaddleY := leftPaddleY - PADDLE_SPEED;
-            elsif (ld = '1') then 
-                nextLeftPaddleY := leftPaddleY + PADDLE_SPEED;
-            elsif (ru = '1') then 
-                nextRightPaddleY := rightPaddleY - PADDLE_SPEED;
-            elsif (rd = '1') then 
-                nextRightPaddleY := rightPaddleY + PADDLE_SPEED;
-            end if;
-        
-            if(leftRight = '0') then
-                nextBallX := ballX + ballSpeedX;
-            else
-                nextBallX := ballX - ballSpeedX;
-            end if;
-            
-            if(upDown = '0') then
-                nextBallY := ballY + ballSpeedY;
-            else
-                nextBallY := ballY - ballSpeedY;
-            end if;
-                       
             player1Scores <= '0';
             player2Scores <= '0';
-            
-            hitNumber <= "000";
             
             if(ballX < PADDLE_OFFSET) then
                 player2Scores <= '1';
             elsif (ballX > WIDTH - PADDLE_OFFSET) then
                 player1Scores <= '1';
-            else
-                --topEdge <= '0'; CHANGE TO BALLX
-                --If the ball is close to the paddle and the
-                --if ((PADDLE_OFFSET + PADDLE_WIDTH > ballX - 5) and (ballX = 7)) then
-                --    leftPaddle <= '1';
-                --    internalRight <= '1';
-                --end if;
-                
+            else             
             end if;
         end if;
     end process;
@@ -146,6 +105,8 @@ begin
     
     
     process(clk60, resetInit)   
+        variable x : integer;
+
         begin
         if rising_edge(clk60) then
             if(resetInit = '0') then
@@ -168,9 +129,10 @@ begin
                 end if;
             end if;
             else
-                ballY <= 240;
+                ballY <= 390;
             end if;
 -------------------------
+        if(resetInit = '0') then
         if(leftRight = '1') then
             if(ballX < ballSpeedX) then
                 --Bounces off the wall
@@ -181,6 +143,51 @@ begin
             elsif(((ballX - LEFT_PADDLE_X) < ballSpeedX) and (ballY > (leftPaddleY - BALL_SIZE)) and (ballY < (leftPaddleY + PADDLE_HEIGHT))) then
                 ballX <= ballX - ballSpeedX;
                 leftRight <= '0';
+                
+                x := ballY + BALL_SIZE - leftPaddleY;
+
+               if( x < 8) then
+                 ballSpeedX <= 2;
+                 ballSpeedY <= 7;
+                 upDown <= '1';
+               elsif(( x >= 8) and (x < 16)) then
+                 ballSpeedX <= 3;
+                 ballSpeedY <= 6;
+                 upDown <= '1';
+               elsif(( x >= 16) and (x < 24)) then
+                 ballSpeedX <= 5;
+                 ballSpeedY <= 5;
+                 upDown <= '1';
+               elsif(( x >= 24) and (x < 32)) then
+                 ballSpeedX <= 6;
+                 ballSpeedY <= 3;
+                 upDown <= '1';
+               elsif(( x >= 32) and (x < 40)) then
+                 ballSpeedX <= 7;
+                 ballSpeedY <= 2;
+                 upDown <= '1';
+               elsif(( x >= 48) and (x < 56)) then
+                 ballSpeedX <= 7;
+                 ballSpeedY <= 2;
+                 upDown <= '0';
+               elsif(( x >= 56) and (x < 64)) then
+                 ballSpeedX <= 6;
+                 ballSpeedY <= 3;
+                 upDown <= '0';
+               elsif(( x >= 64) and (x < 72)) then
+                 ballSpeedX <= 5;
+                 ballSpeedY <= 5;
+                 upDown <= '0';
+               elsif(( x >= 72) and (x < 80)) then
+                 ballSpeedX <= 3;
+                 ballSpeedY <= 6;
+                 upDown <= '0';
+               else
+                 ballSpeedX <= 2;
+                 ballSpeedY <= 7;
+                 upDown <= '0';
+               end if;
+                
             else
                 ballX <= ballX - ballSpeedX;
             end if;
@@ -192,14 +199,59 @@ begin
             elsif(((RIGHT_PADDLE_X - BALL_SIZE - ballX) < ballSpeedX) and (ballY > (rightPaddleY - BALL_SIZE)) and (ballY < (rightPaddleY + PADDLE_HEIGHT))) then
                 ballX <= ballX + ballSpeedX;
                 leftRight <= '1';
+                
+               x := ballY + BALL_SIZE - rightPaddleY;
+
+               if( x < 8) then
+                 ballSpeedX <= 3;
+                 ballSpeedY <= 7;
+                 upDown <= '1';
+               elsif(( x >= 8) and (x < 16)) then
+                 ballSpeedX <= 4;
+                 ballSpeedY <= 6;
+                 upDown <= '1';
+               elsif(( x >= 16) and (x < 24)) then
+                 ballSpeedX <= 5;
+                 ballSpeedY <= 5;
+                 upDown <= '1';
+               elsif(( x >= 24) and (x < 32)) then
+                 ballSpeedX <= 6;
+                 ballSpeedY <= 4;
+                 upDown <= '1';
+               elsif(( x >= 32) and (x < 40)) then
+                 ballSpeedX <= 7;
+                 ballSpeedY <= 3;
+                 upDown <= '1';
+               elsif(( x >= 48) and (x < 56)) then
+                 ballSpeedX <= 7;
+                 ballSpeedY <= 3;
+                 upDown <= '0';
+               elsif(( x >= 56) and (x < 64)) then
+                 ballSpeedX <= 6;
+                 ballSpeedY <= 4;
+                 upDown <= '0';
+               elsif(( x >= 64) and (x < 72)) then
+                 ballSpeedX <= 5;
+                 ballSpeedY <= 5;
+                 upDown <= '0';
+               elsif(( x >= 72) and (x < 80)) then
+                 ballSpeedX <= 4;
+                 ballSpeedY <= 6;
+                 upDown <= '0';
+               else
+                 ballSpeedX <= 3;
+                 ballSpeedY <= 7;
+                 upDown <= '0';
+               end if;
+               
             else
                 ballX <= ballX + ballSpeedX;
             end if;
+        end if;
+        else
+            ballX <= 320;
         end if;            
     end if;
-    
-    --ballX <= inBallX;
-    --ballY <= inBallY;
     
     end process;
     

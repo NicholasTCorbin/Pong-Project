@@ -49,6 +49,18 @@ begin
     --Eventually, we will send signals from the collision controller to prompt changes in ball direction
     --Make speed a constant
     
+    --DON'T USE
+    --DON'T USE
+    --DON'T USE
+    --DON'T USE
+    --DON'T USE
+    --USE BALLCOLLISIONCONTROLLER
+    --USE BALLCOLLISIONCONTROLLER
+    --USE BALLCOLLISIONCONTROLLER
+    --USE BALLCOLLISIONCONTROLLER
+
+
+
     process(clk60)   
         begin
         if rising_edge(clk60) then

@@ -67,7 +67,8 @@ architecture Behavioral of topMod is
            rightPaddleY : out integer range 0 to 480;
            leftScore : out integer range 0 to 99;
            rightScore : out integer range 0 to 99;
-           playerScores : out STD_LOGIC);
+           player1Scores : out STD_LOGIC;
+           player2Scores : out STD_LOGIC);
     end component;
 
     component gameState is
@@ -109,6 +110,9 @@ architecture Behavioral of topMod is
     signal ls : integer range 0 to 99;
     signal rs : integer range 0 to 99;
     signal sco : STD_LOGIC;
+    
+    signal player1Scores : std_logic;
+    signal player2Scores : std_logic;
 
 begin
     debouncerLeftDown : debouncer port map(data => leftDown, clk => clk, op_data => ld);
@@ -131,7 +135,7 @@ begin
     
     control : gameController port map(reset => '0', init => '0', lu => lu, ld => ld, ru => ru, 
     rd => rd, clk60 => clk60, ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry, 
-    leftScore => ls, rightScore => rs, playerScores => sco);
+    leftScore => ls, rightScore => rs, player1Scores => player1Scores, player2Scores => player2Scores);
     
     render : renderer port map(leftPaddleY => ly, rightPaddleY => ry, renderBall => '1', ballX => bx,
     ballY => by, leftScore => ls, rightScore => rs, smallClk => smallClk, clk60 => clk60, sw => sw, hSync => hSync,

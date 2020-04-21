@@ -125,9 +125,9 @@ architecture Behavioral of topMod is
 	signal ls : integer;
     signal rs : integer;
     -- Score debug test
-	signal ls_s : integer;
-	signal rs_s : integer;
-	signal counter : integer := 0;
+	-- signal ls_s : integer;
+	-- signal rs_s : integer;
+	-- signal counter : integer := 0;
 
 	-- Signals flagging goals
 	signal sco : std_logic;
@@ -164,31 +164,32 @@ begin
 	-- Renderer port map
 	render : renderer port map(
         leftPaddleY => ly, rightPaddleY => ry, renderBall => '1', ballX => bx, ballY => by,
-        leftScore => ls_s, rightScore => rs_s, smallClk => smallClk, clk60 => clk60,
+        leftScore => ls, rightScore => rs, smallClk => smallClk, clk60 => clk60,
         sw => sw, hSync => hSync, vSync => vSync,
         vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
 
-    -- Score debug test
-	score_test : process (clk)
-	begin
-		if rising_edge(clk) then
-			if (counter >= 100000000) then
-                counter <= 0;
-                
-				if (ls_s < 9) then
-					ls_s <= ls_s + 1;
-				else
-					ls_s <= 0;
-                end if;
-                
-				if (rs_s > 0) then
-					rs_s <= rs_s - 1;
-				else
-					rs_s <= 9;
-				end if;
-			else
-				counter <= counter + 1;
-			end if;
-		end if;
-	end process;
+--    -- Score debug test
+--	score_test : process (clk)
+--	begin
+--		if rising_edge(clk) then
+--			if (counter >= 100000000) then
+--                counter <= 0;
+--                
+--				if (ls_s < 9) then
+--					ls_s <= ls_s + 1;
+--				else
+--					ls_s <= 0;
+--                end if;
+--                
+--				if (rs_s > 0) then
+--					rs_s <= rs_s - 1;
+--				else
+--					rs_s <= 9;
+--				end if;
+--			else
+--				counter <= counter + 1;
+--			end if;
+--		end if;
+--	end process;
+
 end Behavioral;

@@ -87,8 +87,8 @@ architecture Behavioral of topMod is
 		
 			rst : out std_logic;
 		
-			p1score : out integer range 0 to 9;
-			p2score : out integer range 0 to 9);
+			p1score : out integer range 0 to 99;
+			p2score : out integer range 0 to 99);
 	end component;
 
 	-- Git debug test

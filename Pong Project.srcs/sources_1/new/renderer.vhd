@@ -38,8 +38,8 @@ entity renderer is
        renderBall : in STD_LOGIC;
        ballX : in integer range 0 to 640;
        ballY : in integer range 0 to 480;
-       leftScore : in integer range 0 to 9;
-       rightScore : in integer range 0 to 9;
+       leftScore : in integer range 0 to 99;
+       rightScore : in integer range 0 to 99;
        smallClk : in STD_LOGIC;
        clk60 : in STD_LOGIC;
        sw : in STD_LOGIC;
@@ -269,21 +269,41 @@ begin
               and ry < vInt 
               and vInt < (ry + PADDLE_HEIGHT)) then
             drawWhite := '1';
-          -- p1 score :: leftScore : in integer range 0 to 9;
-          elsif(hInt >= 130 and hInt < 146
-              and vInt >= 5 and vInt < 25) then
           -- index into the num data and draw it all acordingly
           -- currently the bottom bit will be truncated such that
           -- -- the result will be thicker than one pixel
-            if(num_rom(leftScore, (vInt - 5) / 2)((hint - 130) / 2) = '1') then
+          -- p1 score :: leftScore : in integer range 0 to 99
+          -- tens
+          elsif(hInt >= 110 and hInt < 126
+              and vInt >= 5 and vInt < 25) then
+            if(num_rom(leftScore / 10, (vInt - 5) / 2)((hint - 110) / 2) = '1') then
                 drawWhite := '1';
             else
                 drawWhite := '0';
             end if;
-          -- p2 score :: rightScore : in integer range 0 to 9;
+          -- p1 score :: leftScore : in integer range 0 to 99
+          -- ones
+          elsif(hInt >= 130 and hInt < 146
+              and vInt >= 5 and vInt < 25) then
+            if(num_rom(leftScore mod 10, (vInt - 5) / 2)((hint - 130) / 2) = '1') then
+                drawWhite := '1';
+            else
+                drawWhite := '0';
+            end if;
+          -- p2 score :: rightScore : in integer range 0 to 99
+          -- tens
           elsif(hInt >= 450 and hInt < 466
               and vInt >= 5 and vInt < 25) then
-            if(num_rom(rightScore, (vInt - 5) / 2)((hint - 450) / 2) = '1') then
+            if(num_rom(rightScore / 10, (vInt - 5) / 2)((hint - 450) / 2) = '1') then
+                drawWhite := '1';
+            else
+                drawWhite := '0';
+            end if;
+          -- p2 score :: rightScore : in integer range 0 to 99
+          -- ones
+          elsif(hInt >= 470 and hInt < 486
+              and vInt >= 5 and vInt < 25) then
+            if(num_rom(rightScore mod 10, (vInt - 5) / 2)((hint - 470) / 2) = '1') then
                 drawWhite := '1';
             else
                 drawWhite := '0';

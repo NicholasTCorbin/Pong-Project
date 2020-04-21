@@ -13,8 +13,8 @@ entity gameState is
 
     rst : out std_logic;
 
-    p1score : out integer range 0 to 9;
-    p2score : out integer range 0 to 9
+    p1score : out integer range 0 to 99;
+    p2score : out integer range 0 to 99
   );
 end gameState;
 
@@ -105,7 +105,7 @@ begin
                 ena_s <= '0';
                 rst_s <= '1';
                 -- If either P1 or P2 reach 10 points...
-                if p1score_s >= 10 or p2score_s >= 10 then
+                if p1score_s >= 12 or p2score_s >= 12 then
                   -- Next state: init.
                   curr_state <= init;
                 -- Else...

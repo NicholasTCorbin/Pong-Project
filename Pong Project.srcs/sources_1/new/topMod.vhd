@@ -85,16 +85,17 @@ architecture Behavioral of topMod is
 
 			p1goal_i : in std_logic;
 			p2goal_i : in std_logic;
-			p1goal_o : out std_logic;
-			p2goal_o : out std_logic;
+			--p1goal_o : out std_logic;
+			--p2goal_o : out std_logic;
+            rst_o    : out std_logic;
 
-			p1score_i : in integer range 0 to 99;
-			p2score_i : in integer range 0 to 99;
+			--p1score_i : in integer range 0 to 99;
+			--p2score_i : in integer range 0 to 99;
 			p1score_o : out integer range 0 to 99;
-			p2score_o : out integer range 0 to 99;
+			p2score_o : out integer range 0 to 99);
 
-			ballX : out integer range 0 to 640;
-			ballY : out integer range 0 to 480);
+			--ballX : out integer range 0 to 640;
+			--ballY : out integer range 0 to 480);
 	end component;
 
 	-- Git debug test
@@ -133,7 +134,7 @@ architecture Behavioral of topMod is
 	signal sco : std_logic;
 	signal p1sco : std_logic;
 	signal p2sco : std_logic;
-
+    signal rst : std_logic;
 
 begin
 	--Useful for debugging
@@ -152,13 +153,19 @@ begin
 	debouncerCenter : debouncer port map(data => btnC, clk => clk, op_data => center);
 
 	-- Game state port map
+	/*
 	gameState_pm : gameState port map(
 		clk => clk, p1goal_i => p1sco, p2goal_i => p2sco, p1goal_o => p1sco, p2goal_o => p2sco,
-		p1score_i => ls, p2score_i => rs, p1score_o => ls, p2score_o => rs,
-		ballX => bx, ballY => by);
+		p1score_i => ls, p2score_i => rs, p1score_o => ls, p2score_o => rs, rst_o => rst);
+		--ballX => bx, ballY => by);
+    */
+    gameState_pm : gameState port map(
+    clk => clk, p1goal_i => p1sco, p2goal_i => p2sco, 
+    p1score_o => ls, p2score_o => rs, rst_o => rst);
+    --ballX => bx, ballY => by);
 	-- Game controller port map
 	control : gameController port map(
-        reset => '0', init => center, lu => lu, ld => ld, ru => ru, rd => rd, clk60 => clk60,
+        reset => rst, init => center, lu => lu, ld => ld, ru => ru, rd => rd, clk60 => clk60,
         ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry,
 		leftScore => ls, rightScore => rs, player1Scores => p1sco, player2Scores => p2sco);
 	-- Renderer port map

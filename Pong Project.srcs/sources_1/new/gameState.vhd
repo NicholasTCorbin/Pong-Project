@@ -31,9 +31,9 @@ architecture behavioral of gameState is
   signal rst_s       : std_logic := '0';
   signal ena_s       : std_logic := '0';
 
-  signal count_so    : std_logic_vector(31 down to 0) := (others => '0');
+  signal count_so    : std_logic_vector(31 downto 0) := (others => '0');
 
-  constant count_val : std_logic_vector(31 down to 0) := 
+  constant count_val : std_logic_vector(31 downto 0) := 
    "00000010111110101111000010000000";
 
   component gen_counter is
@@ -89,7 +89,7 @@ begin
 
         when p1goal =>
           -- Increment P1's score.
-          p1score_o <= p1score_i + 1;
+          p1score_o <= p1score_o + 1;
           -- Reset score signal.
           p1goal_o <= '0';
           -- Next state: reset.
@@ -97,7 +97,7 @@ begin
 
         when p2goal =>
           -- Increment P2's score.
-          p2score_o <= p2score_i + 1;
+          p2score_o <= p2score_o + 1;
           -- Reset score signal.
           p1goal_o <= '0';
           -- Next state: reset.

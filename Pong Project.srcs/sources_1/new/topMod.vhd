@@ -72,8 +72,6 @@ architecture Behavioral of topMod is
 			ballY : out integer range 0 to 480;
 			leftPaddleY : out integer range 0 to 480;
 			rightPaddleY : out integer range 0 to 480;
-			leftScore : out integer range 0 to 99;
-			rightScore : out integer range 0 to 99;
 			player1Scores : out std_logic;
 			player2Scores : out std_logic);
 	end component;
@@ -82,20 +80,15 @@ architecture Behavioral of topMod is
 	component gameState is
 		port (
 			clk : in std_logic;
-
-			p1goal_i : in std_logic;
-			p2goal_i : in std_logic;
-			--p1goal_o : out std_logic;
-			--p2goal_o : out std_logic;
-            rst_o    : out std_logic;
-
-			--p1score_i : in integer range 0 to 99;
-			--p2score_i : in integer range 0 to 99;
-			p1score_o : out integer range 0 to 99;
-			p2score_o : out integer range 0 to 99);
-
-			--ballX : out integer range 0 to 640;
-			--ballY : out integer range 0 to 480);
+			center : in std_logic;
+		
+			p1goal : in std_logic;
+			p2goal : in std_logic;
+		
+			rst : out std_logic;
+		
+			p1score : out integer range 0 to 9;
+			p2score : out integer range 0 to 9);
 	end component;
 
 	-- Git debug test
@@ -123,8 +116,8 @@ architecture Behavioral of topMod is
 	signal ly : integer range 0 to 480;
 	signal ry : integer range 0 to 480;
 	-- Player scores
-	signal ls : integer;
-    signal rs : integer;
+	signal ls : integer range 0 to 9;
+    signal rs : integer range 0 to 9;
     -- Score debug test
 	-- signal ls_s : integer;
 	-- signal rs_s : integer;
@@ -153,21 +146,16 @@ begin
 	debouncerCenter : debouncer port map(data => btnC, clk => clk, op_data => center);
 
 	-- Game state port map
-	/*
-	gameState_pm : gameState port map(
-		clk => clk, p1goal_i => p1sco, p2goal_i => p2sco, p1goal_o => p1sco, p2goal_o => p2sco,
-		p1score_i => ls, p2score_i => rs, p1score_o => ls, p2score_o => rs, rst_o => rst);
-		--ballX => bx, ballY => by);
-    */
     gameState_pm : gameState port map(
-    clk => clk, p1goal_i => p1sco, p2goal_i => p2sco, 
-    p1score_o => ls, p2score_o => rs, rst_o => rst);
-    --ballX => bx, ballY => by);
+    	clk => clk, center => center, p1goal => p1sco, p2goal => p2sco, 
+		p1score => ls, p2score => rs, rst => rst);
+		
 	-- Game controller port map
 	control : gameController port map(
         reset => rst, init => center, lu => lu, ld => ld, ru => ru, rd => rd, clk60 => clk60,
-        ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry,
-		leftScore => ls, rightScore => rs, player1Scores => p1sco, player2Scores => p2sco);
+		ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry,
+		player1Scores => p1sco, player2Scores => p2sco);
+
 	-- Renderer port map
 	render : renderer port map(
         leftPaddleY => ly, rightPaddleY => ry, renderBall => '1', ballX => bx, ballY => by,

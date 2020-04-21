@@ -31,9 +31,9 @@ architecture behavioral of gameState is
   signal rst_s       : std_logic := '0';
   signal ena_s       : std_logic := '0';
 
-  signal count_so    : std_logic_vector(31 down to 0) := (others => '0');
+  signal count_so    : std_logic_vector(31 downto 0) := (others => '0');
 
-  constant count_val : std_logic_vector(31 down to 0) := 
+  constant count_val : std_logic_vector(31 downto 0) := 
    "00000010111110101111000010000000";
 
   component gen_counter is

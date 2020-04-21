@@ -133,7 +133,7 @@ begin
 	--Useful for debugging
 	-- clkDiv10 : clockdivider port map(clk_in => clk, count_val => 5000000, clk_out => clk10);
 	--git : gitTest port map(a => lu, b => sco);
-
+	
 	-- Clock divider port maps
 	clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);
 	clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
@@ -158,7 +158,7 @@ begin
 
 	-- Renderer port map
 	render : renderer port map(
-        leftPaddleY => ly, rightPaddleY => ry, renderBall => '1', ballX => bx, ballY => by,
+        leftPaddleY => ly, rightPaddleY => ry, renderBall => not (rst or center), ballX => bx, ballY => by,
         leftScore => ls, rightScore => rs, smallClk => smallClk, clk60 => clk60,
         sw => sw, hSync => hSync, vSync => vSync,
         vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);

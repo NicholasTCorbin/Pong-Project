@@ -252,7 +252,12 @@ begin
               and hInt < (inBallX + BALL_SIZE)
               and inBallY < vInt 
               and vInt < (inBallY + BALL_SIZE)) then
-            drawWhite := '1';
+              
+              if(renderBall = '1') then
+                drawWhite := '1';
+              else
+                drawWhite := '0';
+              end if;
           --Render both paddles
           elsif(lx < hInt 
               and hInt < (lx + PADDLE_WIDTH) 

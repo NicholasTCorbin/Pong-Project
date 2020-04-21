@@ -29,7 +29,8 @@ architecture behavioral of gameState is
   type state_type is (init, reset, reset_w, game, p1goal_inc, p2goal_inc);
 
   constant count_val : std_logic_vector(31 downto 0) := 
-   "00000010111110101111000010000000";
+   --"00000010111110101111000010000000"; Increase the count
+   "00001011111010111100001000000000";
 
   signal curr_state  : state_type := init;
 
@@ -103,8 +104,8 @@ begin
             if count_so = count_val then
                 ena_s <= '0';
                 rst_s <= '1';
-                -- If either P1 or P2 reach 9 points...
-                if p1score_s >= 9 or p2score_s >= 9 then
+                -- If either P1 or P2 reach 10 points...
+                if p1score_s >= 10 or p2score_s >= 10 then
                   -- Next state: init.
                   curr_state <= init;
                 -- Else...

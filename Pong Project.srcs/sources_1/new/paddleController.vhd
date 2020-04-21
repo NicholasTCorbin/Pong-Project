@@ -44,8 +44,9 @@ end paddleController;
 
 architecture Behavioral of paddleController is
 
-    signal yl : integer range 0 to 480 := 3;
-    signal yr : integer range 0 to 480 := 3;
+    --480/2 - PADDLE_HEIGHT/2
+    signal yl : integer range 0 to 480 := 216;
+    signal yr : integer range 0 to 480 := 216;
 
     constant WIDTH : integer range 0 to 640 := 640;
     constant HEIGHT : integer range 0 to 480 := 480;
@@ -64,6 +65,7 @@ begin
         begin
         if rising_edge(clk60) then
             -- Only update if the signal is high and was not previously high
+            if(reset = '0') then
             if (lu = '1') then
                 if(yl > (PADDLE_SPEED - 1)) then --11
                     yl <= yl - PADDLE_SPEED;  
@@ -91,6 +93,10 @@ begin
                 else
                     yr <= (HEIGHT - PADDLE_HEIGHT);
                 end if; 
+            end if;
+            else
+                yl <= 216;
+                yr <= 216;
             end if;
         end if;
     end process;

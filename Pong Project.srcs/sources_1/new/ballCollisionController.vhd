@@ -72,6 +72,17 @@ architecture Behavioral of ballCollisionController is
     signal ballSpeedY : integer := 5;
     
     
+    signal count_so    : std_logic_vector(31 downto 0) := (others => '0');
+    signal randomValue1 : std_logic_vector(2 downto 0);
+    signal randomValue2 : std_logic_vector(2 downto 0);
+    signal randomValue3 : std_logic_vector(1 downto 0);
+    
+     component gen_counter is
+        generic (bit_width : integer);
+            port ( clk, rst, ena : in std_logic;
+        dout : out std_logic_vector (bit_width - 1 downto 0));
+     end component;
+     
 begin
     
     --ballX <= 320;
@@ -85,7 +96,10 @@ begin
         end if;
     end process;
     */
-    
+    gc : gen_counter
+        generic map(bit_width => 32)
+        port map(clk60, '0', '1', count_so);
+        
     process(clk60)        
         begin
         if rising_edge(clk60) then
@@ -129,7 +143,43 @@ begin
                 end if;
             end if;
             else
-                ballY <= 390;
+                --ballY <= 390;
+                randomValue1 <= count_so(2 downto 0);
+                randomValue2 <= count_so(5 downto 3);
+                randomValue3 <= count_so(7 downto 6);
+                
+                case randomValue1 is 
+                when "000" => ballSpeedX <=  3; ballSpeedY <=  6;
+                when "001" => ballSpeedX <=  5; ballSpeedY <=  5;
+                when "010" => ballSpeedX <=  6; ballSpeedY <=  3;
+                when "011" => ballSpeedX <=  7; ballSpeedY <=  2;
+                when "100" => ballSpeedX <=  7; ballSpeedY <=  2;
+                when "101" => ballSpeedX <=  6; ballSpeedY <=  3;
+                when "110" => ballSpeedX <=  5; ballSpeedY <=  5;
+                when "111" => ballSpeedX <=  3; ballSpeedY <=  6;
+                when others => ballSpeedX <=  5; ballSpeedY <=  5;
+                end case;
+
+                case randomValue2 is 
+                when "000" =>  ballY <=  130;
+                when "001" =>  ballY <=  150;
+                when "010" =>  ballY <=  180;
+                when "011" =>  ballY <=  210;
+                when "100" =>  ballY <=  240;
+                when "101" =>  ballY <=  270;
+                when "110" =>  ballY <=  300;
+                when "111" =>  ballY <=  330;
+                when others => ballY <=  360;
+                end case;
+                
+                case randomValue3 is 
+                when "00" =>  upDown <=  '0'; leftRight <=  '0';
+                when "01" =>  upDown <=  '0'; leftRight <=  '1';
+                when "10" =>  upDown <=  '1'; leftRight <=  '0';
+                when "11" =>  upDown <=  '1'; leftRight <=  '1';
+                when others => upDown <=  '0'; leftRight <=  '0';
+                end case;
+                    
             end if;
 -------------------------
         if(resetInit = '0') then
@@ -249,7 +299,7 @@ begin
             end if;
         end if;
         else
-            ballX <= 320;
+            ballX <= 330;
         end if;            
     end if;
     

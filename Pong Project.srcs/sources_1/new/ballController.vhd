@@ -1,22 +1,22 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
+-- Engineer: Nick Corbin
 -- Create Date: 04/08/2020 09:11:15 PM
--- Design Name: 
 -- Module Name: ballController - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
 -- Additional Comments:
+--
+--   --DON'T USE
+--   --DON'T USE
+--   --DON'T USE
+--   --DON'T USE
+--   --DON'T USE
+--   --USE BALLCOLLISIONCONTROLLER
+--   --USE BALLCOLLISIONCONTROLLER
+--   --USE BALLCOLLISIONCONTROLLER
+--   --USE BALLCOLLISIONCONTROLLER
+--
 -- 
 ----------------------------------------------------------------------------------
+
 
 
 library IEEE;
@@ -49,18 +49,6 @@ begin
     --Eventually, we will send signals from the collision controller to prompt changes in ball direction
     --Make speed a constant
     
-    --DON'T USE
-    --DON'T USE
-    --DON'T USE
-    --DON'T USE
-    --DON'T USE
-    --USE BALLCOLLISIONCONTROLLER
-    --USE BALLCOLLISIONCONTROLLER
-    --USE BALLCOLLISIONCONTROLLER
-    --USE BALLCOLLISIONCONTROLLER
-
-
-
     process(clk60)   
         begin
         if rising_edge(clk60) then

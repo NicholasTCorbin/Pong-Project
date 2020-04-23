@@ -1,19 +1,7 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
+-- Engineer: Austin Jones Nick Corbin
 -- Create Date: 04/05/2020 04:51:12 PM
--- Design Name: 
 -- Module Name: renderer - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
 -- Additional Comments:
 -- 
 ----------------------------------------------------------------------------------
@@ -22,40 +10,34 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity renderer is
-    generic (simulation : std_logic := '0');
-    Port ( 
-       leftPaddleY : in integer range 0 to 480;
-       rightPaddleY : in integer range 0 to 480;
-       renderBall : in STD_LOGIC;
-       ballX : in integer range 0 to 640;
-       ballY : in integer range 0 to 480;
-       leftScore : in integer range 0 to 99;
-       rightScore : in integer range 0 to 99;
-       smallClk : in STD_LOGIC;
-       clk60 : in STD_LOGIC;
-       sw : in STD_LOGIC;
-       hSync : out STD_LOGIC;
-       vSync : out STD_LOGIC;
-       vgaRed : out STD_LOGIC_VECTOR (3 downto 0);
-       vgaGreen : out STD_LOGIC_VECTOR (3 downto 0);
-       vgaBlue : out STD_LOGIC_VECTOR (3 downto 0));
+   generic (simulation : std_logic := '0');
+   Port ( 
+           leftPaddleY : in integer range 0 to 480;
+           rightPaddleY : in integer range 0 to 480;
+           renderBall : in STD_LOGIC;
+           ballX : in integer range 0 to 640;
+           ballY : in integer range 0 to 480;
+           leftScore : in integer range 0 to 99;
+           rightScore : in integer range 0 to 99;
+           smallClk : in STD_LOGIC;
+           clk60 : in STD_LOGIC;
+           sw : in STD_LOGIC;
+           hSync : out STD_LOGIC;
+           vSync : out STD_LOGIC;
+           vgaRed : out STD_LOGIC_VECTOR (3 downto 0);
+           vgaGreen : out STD_LOGIC_VECTOR (3 downto 0);
+           vgaBlue : out STD_LOGIC_VECTOR (3 downto 0));
 end renderer;
 
 architecture Behavioral of renderer is
 
-    type num_data is array (0 to 9, 0 to 9) of std_logic_vector(0 to 7);
+   -- holds the inferred rom
+   type num_data is array (0 to 9, 0 to 9) of std_logic_vector(0 to 7);
 
-    constant num_rom : num_data := (
+   constant num_rom : num_data := (
         ( -- 0
     -- 01234567
 		"01111100", -- 0  *****
@@ -179,196 +161,203 @@ architecture Behavioral of renderer is
     ));
 
     component vga_controller_640_60 is
-    port(
-       rst         : in std_logic;
-       pixel_clk   : in std_logic;
-       HS          : out std_logic;
-       VS          : out std_logic;
-       hcount      : out std_logic_vector(10 downto 0);
-       vcount      : out std_logic_vector(10 downto 0);
-       blank       : out std_logic
-    );
+       port(
+              rst         : in std_logic;
+              pixel_clk   : in std_logic;
+              HS          : out std_logic;
+              VS          : out std_logic;
+              hcount      : out std_logic_vector(10 downto 0);
+              vcount      : out std_logic_vector(10 downto 0);
+              blank       : out std_logic
+           );
     end component;
-    
+
     component reg is
-    Port ( dataIn : in integer;
-           we : in STD_LOGIC;
-           clk : in STD_LOGIC;
-           dataOut : out integer);
+       Port ( dataIn : in integer;
+              we : in STD_LOGIC;
+              clk : in STD_LOGIC;
+              dataOut : out integer);
     end component;
-    
+
     signal hcount : std_logic_vector(10 downto 0);
     signal vcount :  std_logic_vector(10 downto 0);
     signal blank : std_logic;
-    
+
     constant WIDTH : integer range 0 to 640 := 640;
     constant HEIGHT : integer range 0 to 480 := 480;
-    
+
     constant BALL_SIZE : integer range 0 to 32 := 16;
     constant PADDLE_WIDTH : integer range 0 to 32 := 16;
     constant PADDLE_HEIGHT : integer range 0 to 128 := 64;
     constant PADDLE_OFFSET : integer range 0 to 64 := 32;
-    
+
     signal xl : integer := PADDLE_OFFSET;
     signal xr : integer := WIDTH - PADDLE_OFFSET - PADDLE_WIDTH;
-    
+
     signal lx : integer;
     signal ly : integer;
     signal rx : integer;
     signal ry : integer;
-    
+
     signal inBallX : integer;
     signal inBallY : integer;
 begin
-    lx <= xl;
-    rx <= xr;
-    
-    vga : vga_controller_640_60 port map(rst => sw, pixel_clk => smallClk, HS => hSync, VS => vSync,
-    hCount => hCount, vcount => vcount, blank => blank);
-   
+   lx <= xl;
+   rx <= xr;
+
+   vga : vga_controller_640_60 
+      port map(
+        rst => sw,
+        pixel_clk => smallClk,
+        HS => hSync, VS => vSync,
+        hCount => hCount,
+        vcount => vcount,
+        blank => blank);
+
     --Putting this value into registers might make it bettter.
-    regL : reg port map(dataIn => leftPaddleY, we => '1', clk => clk60, dataOut => ly);
-    regR : reg port map(dataIn => rightPaddleY, we => '1', clk => clk60, dataOut => ry);
-    
-    regX : reg port map(dataIn => ballX, we => '1', clk => clk60, dataOut => inBallX);
-    regY : reg port map(dataIn => ballY, we => '1', clk => clk60, dataOut => inBallY);
+   regL : reg port map(dataIn => leftPaddleY, we => '1', clk => clk60, dataOut => ly);
+                       regR : reg port map(dataIn => rightPaddleY, we => '1', clk => clk60, dataOut => ry);
 
- process(smallClk)
-    
-    --variable lx : integer;
-    --variable ly : integer;
-    --variable rx : integer;
-    --variable ry : integer;  
-     
-    variable vInt : integer := to_integer(unsigned(vCount));
-    variable hInt : integer := to_integer(unsigned(hCount));
-    variable drawWhite : std_logic;
-    variable drawGrey : std_logic;
-    
-    begin
-        if(blank = '1') then
-            vgaRed <= "0000";
-            vgaGreen <= "0000";
-            vgaBlue <= "0000";
-            drawWhite := '0';
-        else
-          --lx := xl;
-          --ly := leftPaddleY;
-          --rx := xr;
-          --ry := rightPaddleY;
-          
-          --Renders the ball
-          --if(ballX < hInt and hInt < (ballX + BALL_SIZE) and ballY < vInt and vInt < (ballY + BALL_SIZE)) then
-          if(inBallX < hInt
-              and hInt < (inBallX + BALL_SIZE)
-              and inBallY < vInt 
-              and vInt < (inBallY + BALL_SIZE)) then
-              
-              if(renderBall = '1') then
-                drawWhite := '1';
-              else
-                drawWhite := '0';
-              end if;
-          --Render both paddles
-          elsif(lx < hInt 
-              and hInt < (lx + PADDLE_WIDTH) 
-              and ly < vInt 
-              and vInt < (ly + PADDLE_HEIGHT)) then
-            drawWhite := '1';
-          elsif(rx < hInt 
-              and hInt < (rx + PADDLE_WIDTH) 
-              and ry < vInt 
-              and vInt < (ry + PADDLE_HEIGHT)) then
-            drawWhite := '1';
-          -- index into the num data and draw it all acordingly
-          -- currently the bottom bit will be truncated such that
-          -- -- the result will be thicker than one pixel
-          -- p1 score :: leftScore : in integer range 0 to 99
-          -- tens
-          elsif(hInt >= 110 and hInt < 126
-              and vInt >= 5 and vInt < 25) then
-            if(num_rom(leftScore / 10, (vInt - 5) / 2)((hint - 110) / 2) = '1') then
-                drawWhite := '1';
-            else
-                drawWhite := '0';
-            end if;
-          -- p1 score :: leftScore : in integer range 0 to 99
-          -- ones
-          elsif(hInt >= 130 and hInt < 146
-              and vInt >= 5 and vInt < 25) then
-            if(num_rom(leftScore mod 10, (vInt - 5) / 2)((hint - 130) / 2) = '1') then
-                drawWhite := '1';
-            else
-                drawWhite := '0';
-            end if;
-          -- p2 score :: rightScore : in integer range 0 to 99
-          -- tens
-          elsif(hInt >= 450 and hInt < 466
-              and vInt >= 5 and vInt < 25) then
-            if(num_rom(rightScore / 10, (vInt - 5) / 2)((hint - 450) / 2) = '1') then
-                drawWhite := '1';
-            else
-                drawWhite := '0';
-            end if;
-          -- p2 score :: rightScore : in integer range 0 to 99
-          -- ones
-          elsif(hInt >= 470 and hInt < 486
-              and vInt >= 5 and vInt < 25) then
-            if(num_rom(rightScore mod 10, (vInt - 5) / 2)((hint - 470) / 2) = '1') then
-                drawWhite := '1';
-            else
-                drawWhite := '0';
-            end if;
-          --I'm just going to draw an ugly line in the center right now, we'll make it better later
-          elsif(hInt > 317
-              and hInt < 323
-              and (((vInt + 8) / 16) mod 2) = 1) then
-            drawWhite := '1';
-          else
-            drawWhite := '0';
-          end if;
+                                           regX : reg port map(dataIn => ballX, we => '1', clk => clk60, dataOut => inBallX);
+                                                               regY : reg port map(dataIn => ballY, we => '1', clk => clk60, dataOut => inBallY);
+
+process(smallClk)
+
+ --variable lx : integer;
+ --variable ly : integer;
+ --variable rx : integer;
+ --variable ry : integer;  
+
+ variable vInt : integer := to_integer(unsigned(vCount));
+ variable hInt : integer := to_integer(unsigned(hCount));
+ variable drawWhite : std_logic;
+ variable drawGrey : std_logic;
+
+begin
+ if(blank = '1') then
+    vgaRed <= "0000";
+    vgaGreen <= "0000";
+    vgaBlue <= "0000";
+    drawWhite := '0';
+ else
+    --lx := xl;
+    --ly := leftPaddleY;
+    --rx := xr;
+    --ry := rightPaddleY;
+
+    --Renders the ball
+    --if(ballX < hInt and hInt < (ballX + BALL_SIZE) and ballY < vInt and vInt < (ballY + BALL_SIZE)) then
+    if(inBallX < hInt
+    and hInt < (inBallX + BALL_SIZE)
+    and inBallY < vInt 
+    and vInt < (inBallY + BALL_SIZE)) then
+
+       if(renderBall = '1') then
+          drawWhite := '1';
+       else
+          drawWhite := '0';
+       end if;
+    --Render both paddles
+    elsif(lx < hInt 
+    and hInt < (lx + PADDLE_WIDTH) 
+    and ly < vInt 
+    and vInt < (ly + PADDLE_HEIGHT)) then
+       drawWhite := '1';
+    elsif(rx < hInt 
+    and hInt < (rx + PADDLE_WIDTH) 
+    and ry < vInt 
+    and vInt < (ry + PADDLE_HEIGHT)) then
+       drawWhite := '1';
+    -- index into the num data and draw it all acordingly
+    -- currently the bottom bit will be truncated such that
+    -- -- the result will be thicker than one pixel
+    -- p1 score :: leftScore : in integer range 0 to 99
+    -- tens
+    elsif(hInt >= 110 and hInt < 126
+    and vInt >= 5 and vInt < 25) then
+       if(num_rom(leftScore / 10, (vInt - 5) / 2)((hint - 110) / 2) = '1') then
+          drawWhite := '1';
+       else
+          drawWhite := '0';
+       end if;
+    -- p1 score :: leftScore : in integer range 0 to 99
+    -- ones
+    elsif(hInt >= 130 and hInt < 146
+    and vInt >= 5 and vInt < 25) then
+       if(num_rom(leftScore mod 10, (vInt - 5) / 2)((hint - 130) / 2) = '1') then
+          drawWhite := '1';
+       else
+          drawWhite := '0';
+       end if;
+    -- p2 score :: rightScore : in integer range 0 to 99
+    -- tens
+    elsif(hInt >= 450 and hInt < 466
+    and vInt >= 5 and vInt < 25) then
+       if(num_rom(rightScore / 10, (vInt - 5) / 2)((hint - 450) / 2) = '1') then
+          drawWhite := '1';
+       else
+          drawWhite := '0';
+       end if;
+    -- p2 score :: rightScore : in integer range 0 to 99
+    -- ones
+    elsif(hInt >= 470 and hInt < 486
+    and vInt >= 5 and vInt < 25) then
+       if(num_rom(rightScore mod 10, (vInt - 5) / 2)((hint - 470) / 2) = '1') then
+          drawWhite := '1';
+       else
+          drawWhite := '0';
+       end if;
+    --I'm just going to draw an ugly line in the center right now, we'll make it better later
+    elsif(hInt > 317
+    and hInt < 323
+    and (((vInt + 8) / 16) mod 2) = 1) then
+       drawWhite := '1';
+    else
+       drawWhite := '0';
+    end if;
 
 
-          -- grey loop
-          if(simulation = '1') then
-             if(hInt = 0 or hInt = WIDTH) then
-                drawGrey := '1';
-             elsif(vInt = 0 or vInt = HEIGHT) then
-                drawGrey := '1';
-             elsif(inBallX = hInt
-                 or inBallY = vInt 
-                 or hInt = (inBallX + BALL_SIZE)
-                 or vInt = (inBallY + BALL_SIZE)) then
-                drawGrey := '1';
-             elsif(lx = hInt 
-                 or ly = vInt 
-                 or hInt = (lx + PADDLE_WIDTH) 
-                 or vInt = (ly + PADDLE_HEIGHT)) then
-                drawGrey := '1';
-             elsif(rx = hInt 
-                 or ry = vInt 
-                 or hInt = (rx + PADDLE_WIDTH) 
-                 or vInt = (ry + PADDLE_HEIGHT)) then
-                drawGrey := '1';
-             else
-                drawGrey := '0';
-             end if;
-          end if;
-        
-          if(drawWhite = '1') then  
-            vgaRed <= "1111";
-            vgaGreen <= "1111";
-            vgaBlue <= "1111"; 
-          elsif(drawGrey = '1') then
-            vgaRed <= "0011";
-            vgaGreen <= "0011";
-            vgaBlue <= "0011"; 
-          else
-            vgaRed <= "0000";
-            vgaGreen <= "0000";
-            vgaBlue <= "0000";    
-          end if;        
-      end if;
-    end process;
+    -- grey loop
+    -- render the boundaries of all the components
+    if(simulation = '1') then
+       if(hInt = 0 or hInt = WIDTH) then
+          drawGrey := '1';
+       elsif(vInt = 0 or vInt = HEIGHT) then
+          drawGrey := '1';
+       elsif(inBallX = hInt
+       or inBallY = vInt 
+       or hInt = (inBallX + BALL_SIZE)
+       or vInt = (inBallY + BALL_SIZE)) then
+          drawGrey := '1';
+       elsif(lx = hInt 
+       or ly = vInt 
+       or hInt = (lx + PADDLE_WIDTH) 
+       or vInt = (ly + PADDLE_HEIGHT)) then
+          drawGrey := '1';
+       elsif(rx = hInt 
+       or ry = vInt 
+       or hInt = (rx + PADDLE_WIDTH) 
+       or vInt = (ry + PADDLE_HEIGHT)) then
+          drawGrey := '1';
+       else
+          drawGrey := '0';
+       end if;
+    end if;
+
+    if(drawWhite = '1') then  
+       vgaRed <= "1111";
+       vgaGreen <= "1111";
+       vgaBlue <= "1111"; 
+    elsif(drawGrey = '1') then
+       vgaRed <= "0011";
+       vgaGreen <= "0011";
+       vgaBlue <= "0011"; 
+    else
+       vgaRed <= "0000";
+       vgaGreen <= "0000";
+       vgaBlue <= "0000";    
+    end if;        
+ end if;
+end process;
 
 end Behavioral;

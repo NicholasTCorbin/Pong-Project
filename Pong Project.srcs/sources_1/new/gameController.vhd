@@ -1,3 +1,10 @@
+----------------------------------------------------------------------------------
+-- Engineer: Nick Corbin Jeffrey Liu Austin Jones
+-- Create Date: 04/05/2020 05:41:12 PM
+-- Module Name: gameState - Behavioral
+-- Additional Comments: wraps all the onscreen ojects into a file
+-- 
+----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -102,22 +109,6 @@ begin
       ballY => ballY,
       player1Scores => player1Scores,
       player2Scores => player2Scores); 
-    
-    --Updates paddle location depending on 
-    /*
-    process (clk60)   
-        begin
-        if rising_edge(clk60) then
-            --bx <= bx + 4;
-            --by <= by + 6;
-            --ballX <= bx;
-            --ballY <= by;
-            ballX <= ballX + 4;
-            ballY <= ballY + 6;
-            -- Only update if the signal is high and was not previously high
-        end if;
-    end process;
-    */
 
     
 end Behavioral;

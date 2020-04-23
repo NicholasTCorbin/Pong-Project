@@ -1,3 +1,16 @@
+----------------------------------------------------------------------------------
+-- Engineer: 
+--    Austin Jones 
+--    Nick Corbin 
+--    Jonathan Ting 
+--    Jeffrey Liu
+-- Create Date: 04/05/2020 04:51:12 PM
+-- Module Name: renderer - Behavioral
+-- Additional Comments:
+--    Top level of the project wraps in all the goodies
+-- 
+----------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -137,60 +150,62 @@ begin
 	--git : gitTest port map(a => lu, b => sco);
 	
 	-- Clock divider port maps
-	clkDiv : clockdivider port map(clk_in => clk, count_val => 2, clk_out => smallClk);
-	clkDiv60 : clockdivider port map(clk_in => clk, count_val => 833333, clk_out => clk60);
+	clkDiv : clockdivider
+      port map(clk_in => clk, count_val => 2, clk_out => smallClk);
+	clkDiv60 : clockdivider
+      port map(clk_in => clk, count_val => 833333, clk_out => clk60);
 
 	-- Debouncer port maps
-	debouncerLeftDown : debouncer port map(data => leftDown, clk => clk, op_data => ld);
-	debouncerRightUp : debouncer port map(data => rightUp, clk => clk, op_data => ru);
-	debouncerLeftUp : debouncer port map(data => leftUp, clk => clk, op_data => lu);
-	debouncerRightDown : debouncer port map(data => rightDown, clk => clk, op_data => rd);
-	debouncerCenter : debouncer port map(data => btnC, clk => clk, op_data => center);
+	debouncerLeftDown : debouncer 
+      port map(data => leftDown, clk => clk, op_data => ld);
+	debouncerRightUp : debouncer 
+      port map(data => rightUp, clk => clk, op_data => ru);
+	debouncerLeftUp : debouncer
+      port map(data => leftUp, clk => clk, op_data => lu);
+	debouncerRightDown : debouncer
+      port map(data => rightDown, clk => clk, op_data => rd);
+	debouncerCenter : debouncer
+      port map(data => btnC, clk => clk, op_data => center);
 
 	-- Game state port map
    gameState_pm : gameState 
-   generic map(simulation => '0')
-   port map(
-    	clk => clk, center => center, p1goal => p1sco, p2goal => p2sco, 
-		p1score => ls, p2score => rs, rst => rst);
+      generic map(simulation => '0')
+      port map(
+         clk => clk, center => center, p1goal => p1sco, p2goal => p2sco, 
+         p1score => ls, p2score => rs, rst => rst);
 		
 	-- Game controller port map
-	control : gameController port map(
-        reset => rst, init => center, lu => lu, ld => ld, ru => ru, rd => rd, clk60 => clk60,
-		ballX => bx, ballY => by, leftPaddleY => ly, rightPaddleY => ry,
-		player1Scores => p1sco, player2Scores => p2sco);
+	control : gameController
+      port map(
+        reset => rst,
+        init => center,
+        lu => lu, ld => ld,
+        ru => ru, rd => rd,
+        clk60 => clk60,
+        ballX => bx,
+        ballY => by,
+        leftPaddleY => ly,
+        rightPaddleY => ry,
+        player1Scores => p1sco,
+        player2Scores => p2sco);
 
 	-- Renderer port map
-	render : renderer 
-   generic map(simulation => '1')
-   port map(
-        leftPaddleY => ly, rightPaddleY => ry, renderBall => not (rst or center), ballX => bx, ballY => by,
-        leftScore => ls, rightScore => rs, smallClk => smallClk, clk60 => clk60,
-        sw => sw, hSync => hSync, vSync => vSync,
-        vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
-
---    -- Score debug test
---	score_test : process (clk)
---	begin
---		if rising_edge(clk) then
---			if (counter >= 100000000) then
---                counter <= 0;
---                
---				if (ls_s < 9) then
---					ls_s <= ls_s + 1;
---				else
---					ls_s <= 0;
---                end if;
---                
---				if (rs_s > 0) then
---					rs_s <= rs_s - 1;
---				else
---					rs_s <= 9;
---				end if;
---			else
---				counter <= counter + 1;
---			end if;
---		end if;
---	end process;
+      render : renderer 
+      generic map(simulation => '1')
+      port map(
+        leftPaddleY => ly,
+        rightPaddleY => ry,
+        renderBall => not (rst or center),
+        ballX => bx, ballY => by,
+        leftScore => ls,
+        rightScore => rs,
+        smallClk => smallClk,
+        clk60 => clk60,
+        sw => sw,
+        hSync => hSync,
+        vSync => vSync,
+        vgaRed => vgaRed,
+        vgaGreen => vgaGreen,
+        vgaBlue => vgaBlue);
 
 end Behavioral;

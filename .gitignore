@@ -11,6 +11,7 @@
 !*/
 !.gitignore
 !.gitattributes
+!./sim_pics
 !./sim_pics/*
 
 /Pong Project.runs/

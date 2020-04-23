@@ -32,6 +32,7 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity renderer is
+    generic (simulation : std_logic := '0');
     Port ( 
        leftPaddleY : in integer range 0 to 480;
        rightPaddleY : in integer range 0 to 480;
@@ -55,8 +56,8 @@ architecture Behavioral of renderer is
     type num_data is array (0 to 9, 0 to 9) of std_logic_vector(0 to 7);
 
     constant num_rom : num_data := (
-    --   76543210
         ( -- 0
+    -- 01234567
 		"01111100", -- 0  *****
 		"11000110", -- 1 **   **
 		"11000110", -- 2 **   **
@@ -68,6 +69,7 @@ architecture Behavioral of renderer is
 		"11000110", -- 8 **   **
 		"01111100"  -- 9  *****
         ), ( -- 1
+    -- 01234567
 		"00011000", -- 0    **
 		"00111000", -- 1   ***
 		"01111000", -- 2  ****
@@ -79,6 +81,7 @@ architecture Behavioral of renderer is
 		"00011000", -- 8    **
 		"01111110"  -- 9  ******
         ),( -- 2
+    -- 01234567
 		"01111100", -- 0  *****
 		"11000110", -- 1 **   **
 		"00000110", -- 2      **
@@ -90,6 +93,7 @@ architecture Behavioral of renderer is
 		"11000110", -- 8 **   **
 		"11111110"  -- 9 *******
         ),( -- 3
+    -- 01234567
 		"01111100", -- 0  *****
 		"11000110", -- 1 **   **
 		"00000110", -- 2      **
@@ -101,6 +105,7 @@ architecture Behavioral of renderer is
 		"11000110", -- 8 **   **
 		"01111100"  -- 9  *****
         ),( -- 4
+    -- 01234567
 		"00001100", -- 0     **
 		"00011100", -- 1    ***
 		"00111100", -- 2   ****
@@ -112,6 +117,7 @@ architecture Behavioral of renderer is
 		"00001100", -- 8     **
 		"00011110"  -- 9    ****
         ),( -- 5
+    -- 01234567
 		"11111110", -- 0 *******
 		"11000000", -- 1 **
 		"11000000", -- 2 **
@@ -123,6 +129,7 @@ architecture Behavioral of renderer is
 		"11000110", -- 8 **   **
 		"01111100"  -- 9  *****
         ),( -- 6
+    -- 01234567
 		"00111000", -- 0   ***
 		"01100000", -- 1  **
 		"11000000", -- 2 **
@@ -134,6 +141,7 @@ architecture Behavioral of renderer is
 		"11000110", -- 8 **   **
 		"01111100"  -- 9  *****
         ),( -- 7
+    -- 01234567
 		"11111110", -- 0 *******
 		"11000110", -- 1 **   **
 		"00000110", -- 2      **
@@ -145,6 +153,7 @@ architecture Behavioral of renderer is
 		"00110000", -- 8   **
 		"00110000"  -- 9   **
         ),( -- 8
+    -- 01234567
 		"01111100", -- 0  *****
 		"11000110", -- 1 **   **
 		"11000110", -- 2 **   **
@@ -156,6 +165,7 @@ architecture Behavioral of renderer is
 		"11000110", -- 8 **   **
 		"01111100"  -- 9  *****
         ),( -- 9
+    -- 01234567
 		"01111100", -- 0  *****
 		"11000110", -- 1 **   **
 		"11000110", -- 2 **   **
@@ -233,6 +243,7 @@ begin
     variable vInt : integer := to_integer(unsigned(vCount));
     variable hInt : integer := to_integer(unsigned(hCount));
     variable drawWhite : std_logic;
+    variable drawGrey : std_logic;
     
     begin
         if(blank = '1') then
@@ -316,11 +327,42 @@ begin
           else
             drawWhite := '0';
           end if;
+
+
+          -- grey loop
+          if(simulation = '1') then
+             if(hInt = 0 or hInt = WIDTH) then
+                drawGrey := '1';
+             elsif(vInt = 0 or vInt = HEIGHT) then
+                drawGrey := '1';
+             elsif(inBallX = hInt
+                 or inBallY = vInt 
+                 or hInt = (inBallX + BALL_SIZE)
+                 or vInt = (inBallY + BALL_SIZE)) then
+                drawGrey := '1';
+             elsif(lx = hInt 
+                 or ly = vInt 
+                 or hInt = (lx + PADDLE_WIDTH) 
+                 or vInt = (ly + PADDLE_HEIGHT)) then
+                drawGrey := '1';
+             elsif(rx = hInt 
+                 or ry = vInt 
+                 or hInt = (rx + PADDLE_WIDTH) 
+                 or vInt = (ry + PADDLE_HEIGHT)) then
+                drawGrey := '1';
+             else
+                drawGrey := '0';
+             end if;
+          end if;
         
           if(drawWhite = '1') then  
             vgaRed <= "1111";
             vgaGreen <= "1111";
             vgaBlue <= "1111"; 
+          elsif(drawGrey = '1') then
+            vgaRed <= "0011";
+            vgaGreen <= "0011";
+            vgaBlue <= "0011"; 
           else
             vgaRed <= "0000";
             vgaGreen <= "0000";

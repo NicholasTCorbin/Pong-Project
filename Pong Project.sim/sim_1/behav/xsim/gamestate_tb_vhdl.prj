@@ -1,0 +1,23 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../Pong Project.srcs/sources_1/new/clockdivider.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/debouncer.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/gen_counter.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/vga_controller.vhd" \
+
+vhdl2008 xil_defaultlib  \
+"../../../../Pong Project.srcs/sources_1/new/ballCollisionController.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/gameController.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/gameState.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/paddleController.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/reg.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/renderer.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/topMod.vhd" \
+"../../../../Pong Project.srcs/sources_1/new/ballController.vhd" \
+
+vhdl xil_defaultlib  \
+"../../../../Pong Project.srcs/sources_1/new/gitTest.vhd" \
+"../../../../Pong Project.srcs/sim_1/new/gamestate_tb.vhd" \
+
+# Do not sort compile order
+nosort

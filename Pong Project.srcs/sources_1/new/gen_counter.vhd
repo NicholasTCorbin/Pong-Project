@@ -17,7 +17,7 @@ end gen_counter;
 
 architecture Behavioral of gen_counter is
 
-signal data : unsigned(bit_WIDTH - 1 downto 0);
+signal data : unsigned(bit_WIDTH - 1 downto 0) := (others => '0');
 
 begin
 

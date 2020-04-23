@@ -66,13 +66,13 @@ begin
         if rising_edge(clk60) then
             -- Only update if the signal is high and was not previously high
             if(reset = '0') then
-            if (lu = '1') then
+            if (lu = '1' and ld = '0') then
                 if(yl > (PADDLE_SPEED - 1)) then --11
                     yl <= yl - PADDLE_SPEED;  
                 else
                     yl <= 0;
                 end if;     
-            elsif (ld = '1') then
+            elsif (ld = '1' and lu = '0') then
                 --480 - 64 - 12 = 404
                 if(yl < (HEIGHT - PADDLE_HEIGHT - PADDLE_SPEED)) then
                     yl <= yl + PADDLE_SPEED;
@@ -81,13 +81,13 @@ begin
                 end if;
             end if;
             
-            if (ru = '1') then
+            if (ru = '1' and rd = '0') then
                 if(yr > (PADDLE_SPEED - 1)) then
                     yr <= yr - PADDLE_SPEED;     
                 else
                     yr <= 0;
                 end if; 
-            elsif (rd = '1') then
+            elsif (rd = '1' and ru = '0') then
                 if(yr < (HEIGHT - PADDLE_HEIGHT - PADDLE_SPEED)) then
                     yr <= yr + PADDLE_SPEED;     
                 else

@@ -40,6 +40,7 @@ architecture Behavioral of topMod is
 
 	-- Renders game state to VGA output
 	component renderer is
+      generic (simulation : std_logic := '0');
 		port (
 			leftPaddleY : in integer range 0 to 480;
 			rightPaddleY : in integer range 0 to 480;
@@ -78,6 +79,7 @@ architecture Behavioral of topMod is
 
 	-- Manages game state with finite state machine
 	component gameState is
+      generic(simulation : std_logic := '0');
 		port (
 			clk : in std_logic;
 			center : in std_logic;
@@ -146,7 +148,9 @@ begin
 	debouncerCenter : debouncer port map(data => btnC, clk => clk, op_data => center);
 
 	-- Game state port map
-    gameState_pm : gameState port map(
+   gameState_pm : gameState 
+   generic map(simulation => '0')
+   port map(
     	clk => clk, center => center, p1goal => p1sco, p2goal => p2sco, 
 		p1score => ls, p2score => rs, rst => rst);
 		
@@ -157,7 +161,9 @@ begin
 		player1Scores => p1sco, player2Scores => p2sco);
 
 	-- Renderer port map
-	render : renderer port map(
+	render : renderer 
+   generic map(simulation => '1')
+   port map(
         leftPaddleY => ly, rightPaddleY => ry, renderBall => not (rst or center), ballX => bx, ballY => by,
         leftScore => ls, rightScore => rs, smallClk => smallClk, clk60 => clk60,
         sw => sw, hSync => hSync, vSync => vSync,

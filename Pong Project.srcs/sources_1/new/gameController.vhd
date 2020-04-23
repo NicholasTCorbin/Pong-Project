@@ -43,6 +43,7 @@ architecture Behavioral of gameController is
     end component;
     
     component ballCollisionController is
+        generic(simulation : STD_LOGIC);
         Port ( clk60 : in STD_LOGIC;
                leftPaddleY : in integer;
                rightPaddleY : in integer;
@@ -80,12 +81,27 @@ begin
     --ballX <= 64;
     --ballY <= 64;
     
-    paddle : paddleController port map(reset => reset, lu => lu, ld => ld, ru => ru, rd => rd,
-    clk60 => clk60, leftPaddleY => leftPaddleY, rightPaddleY => rightPaddleY);
+    paddle : paddleController
+    port map(reset => reset,
+      lu => lu, ld => ld,
+      ru => ru, rd => rd,
+      clk60 => clk60,
+      leftPaddleY => leftPaddleY,
+      rightPaddleY => rightPaddleY);
 
     --Add player 1 and player 2 scoring out later.
-    ballCollision : ballCollisionController port map(clk60 => clk60, leftPaddleY => leftPaddleY, rightPaddleY => rightPaddleY,
-    lu => lu, ld => ld, ru => ru, rd => rd, resetInit => (reset or init), ballX => ballX, ballY => ballY, player1Scores => player1Scores, player2Scores => player2Scores); 
+    ballCollision : ballCollisionController 
+    generic map(simulation => '0')
+    port map(clk60 => clk60,
+      leftPaddleY => leftPaddleY,
+      rightPaddleY => rightPaddleY,
+      lu => lu, ld => ld,
+      ru => ru, rd => rd,
+      resetInit => (reset or init),
+      ballX => ballX,
+      ballY => ballY,
+      player1Scores => player1Scores,
+      player2Scores => player2Scores); 
     
     --Updates paddle location depending on 
     /*

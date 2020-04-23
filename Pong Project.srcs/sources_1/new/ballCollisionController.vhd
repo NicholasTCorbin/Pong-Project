@@ -32,6 +32,7 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity ballCollisionController is
+    Generic ( simulation : std_logic := '0');
     Port ( clk60 : in STD_LOGIC;
            leftPaddleY : in integer;
            rightPaddleY : in integer;
@@ -62,9 +63,9 @@ architecture Behavioral of ballCollisionController is
 
     -- -> leftRight = '0'
     --Going down the screen = '0'
-    signal upDown : STD_LOGIC;
-    signal leftRight : STD_LOGIC;
-    signal hitNumber : std_logic_vector (2 downto 0);
+    signal upDown : STD_LOGIC := '0';
+    signal leftRight : STD_LOGIC := '0';
+    signal hitNumber : std_logic_vector (2 downto 0) := (others => '0');
     
     --Make case statement later
     --7x1 5x5 6x4/3 are all speeds that are possible
@@ -73,9 +74,9 @@ architecture Behavioral of ballCollisionController is
     
     
     signal count_so    : std_logic_vector(31 downto 0) := (others => '0');
-    signal randomValue1 : std_logic_vector(2 downto 0);
-    signal randomValue2 : std_logic_vector(2 downto 0);
-    signal randomValue3 : std_logic_vector(1 downto 0);
+    signal randomValue1 : std_logic_vector(2 downto 0) := (others => '0');
+    signal randomValue2 : std_logic_vector(2 downto 0) := (others => '0');
+    signal randomValue3 : std_logic_vector(1 downto 0) := (others => '0');
     
      component gen_counter is
         generic (bit_width : integer);
@@ -125,24 +126,24 @@ begin
         if rising_edge(clk60) then
             if(resetInit = '0') then
             --Controls code that bounces ball off of top and bottom screen
-            if(upDown = '1') then
-                if(ballY < ballSpeedY) then
-                    --Bounces off the wall
-                    ballY <= ballSpeedY - ballY;
-                    upDown <= '0';
-                else
-                    ballY <= ballY - ballSpeedY;
-                end if;
-            elsif (upDown = '0') then
-                if(ballY > (HEIGHT - ballSpeedY)) then
-                    --Bounces off the wall
-                    ballY <= 960 - ballSpeedY - ballY;
-                    upDown <= '1';
-                else
-                    ballY <= ballY + ballSpeedY;
-                end if;
-            end if;
-            else
+               if(upDown = '1') then
+                   if(ballY < ballSpeedY) then
+                       --Bounces off the wall
+                       ballY <= ballSpeedY - ballY;
+                       upDown <= '0';
+                   else
+                       ballY <= ballY - ballSpeedY;
+                   end if;
+               elsif (upDown = '0') then
+                   if(ballY > (HEIGHT - ballSpeedY)) then
+                       --Bounces off the wall
+                       ballY <= 960 - ballSpeedY - ballY;
+                       upDown <= '1';
+                   else
+                       ballY <= ballY + ballSpeedY;
+                   end if;
+               end if;
+            elsif(simulation = '0') then
                 --ballY <= 390;
                 randomValue1 <= count_so(2 downto 0);
                 randomValue2 <= count_so(5 downto 3);
@@ -179,6 +180,15 @@ begin
                 when "11" =>  upDown <=  '1'; leftRight <=  '1';
                 when others => upDown <=  '0'; leftRight <=  '0';
                 end case;
+
+            else -- we in the sim
+
+               ballX <= 320;
+               ballY <= 240;
+               ballSpeedX <=  5;
+               ballSpeedY <=  5;
+               upDown <=  '0';
+               leftRight <=  '0';
                     
             end if;
 -------------------------
@@ -190,7 +200,9 @@ begin
                 leftRight <= '0';
             --Paddle Collision Detection. The worst if statement of all time
             --If we are close on the x axis to the paddle
-            elsif(((ballX - LEFT_PADDLE_X) < ballSpeedX) and (ballY > (leftPaddleY - BALL_SIZE)) and (ballY < (leftPaddleY + PADDLE_HEIGHT))) then
+            elsif(((ballX - LEFT_PADDLE_X) < ballSpeedX)
+               and (ballY > (leftPaddleY - BALL_SIZE))
+               and (ballY < (leftPaddleY + PADDLE_HEIGHT))) then
                 ballX <= ballX - ballSpeedX;
                 leftRight <= '0';
                 
@@ -246,7 +258,9 @@ begin
                 --Bounces off the wall
                 ballX <= 1280 - ballSpeedX - ballX;
                 leftRight <= '1';
-            elsif(((RIGHT_PADDLE_X - BALL_SIZE - ballX) < ballSpeedX) and (ballY > (rightPaddleY - BALL_SIZE)) and (ballY < (rightPaddleY + PADDLE_HEIGHT))) then
+            elsif(((RIGHT_PADDLE_X - BALL_SIZE - ballX) < ballSpeedX)
+               and (ballY > (rightPaddleY - BALL_SIZE))
+               and (ballY < (rightPaddleY + PADDLE_HEIGHT))) then
                 ballX <= ballX + ballSpeedX;
                 leftRight <= '1';
                 

@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 
 entity gameState is
+  generic(simulation : std_logic := '0');
   port (
     clk : in std_logic;
     center : in std_logic;
@@ -28,9 +29,8 @@ architecture behavioral of gameState is
 
   type state_type is (init, reset, reset_w, game, p1goal_inc, p2goal_inc);
 
-  constant count_val : std_logic_vector(31 downto 0) := 
-   --"00000010111110101111000010000000"; Increase the count
-   "00001011111010111100001000000000";
+  -- constant value set at compile
+  signal count_val : std_logic_vector(31 downto 0) := (others => '0'); 
 
   signal curr_state  : state_type := init;
 
@@ -39,13 +39,19 @@ architecture behavioral of gameState is
 
   signal count_so    : std_logic_vector(31 downto 0) := (others => '0');
   
-  signal p1score_s : integer range 0 to 99;
-  signal p2score_s : integer range 0 to 99;
+  signal p1score_s : integer range 0 to 99 := 0;
+  signal p2score_s : integer range 0 to 99 := 0;
 
 
 begin
   p1score <= p1score_s;
   p2score <= p2score_s;
+
+  count_val <= 
+    "00000000000000000000000000000011"
+    when simulation = '1' else
+    --"00000010111110101111000010000000"; Increase the count
+    "00001011111010111100001000000000";
 
   gc : gen_counter
     generic map(bit_width => 32)
